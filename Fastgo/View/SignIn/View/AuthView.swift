@@ -7,9 +7,16 @@
 
 import SwiftUI
 
-struct SignInView: View {
-    @StateObject private var viewModel = SignInViewModel.shared
+struct AuthView: View {
     @StateObject private var keyboard = KeyboardHeightHelper()
+    @StateObject private var viewModel : AuthViewModel
+    
+    init(router: Router) {
+        _viewModel = .init(
+            wrappedValue: AuthViewModel(router: router)
+        )
+    }
+    
     var body: some View {
         ZStack{
             VStack {
@@ -22,12 +29,7 @@ struct SignInView: View {
             }
             VStack{
                 Spacer()
-                PhoneNumberView()
-//                if viewModel.siginInStep == .phoneNumber {
-//                    PhoneNumberView()
-//                } else {
-//                    OPTVerifyView()
-//                }
+                PhoneNumberView(viewModel: viewModel)
             }
             .offset(y: -keyboard.keyboardHeight * 0.15)
             .animation(.easeOut(duration: 0.3), value: keyboard.keyboardHeight)
@@ -40,14 +42,8 @@ struct SignInView: View {
     }
 }
 
-extension View {
-    func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
-
 #Preview {
-    SignInView()
+    AuthView(router: Router())
 }
 
 

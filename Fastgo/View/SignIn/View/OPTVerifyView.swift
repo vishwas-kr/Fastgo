@@ -7,10 +7,16 @@
 
 import SwiftUI
 
-struct OPTVerifyView: View {
+struct OTPVerifyView: View {
     @State private var otp: [String] = Array(repeating: "", count: 6)
     @FocusState private var focusedIndex : Int?
     @EnvironmentObject private var router : Router
+    @StateObject private var viewModel : AuthViewModel
+    
+    init(router:Router){
+        _viewModel = .init(wrappedValue: AuthViewModel(router: router))
+    }
+    
     var body: some View {
         VStack {
             VStack(spacing:8){
@@ -65,10 +71,9 @@ struct OPTVerifyView: View {
             }
             .padding(.vertical)
             Button(action:{
-                hideKeyboard()
                 let otpCode = otp.joined()
-                print("OTP:", otpCode)
-                router.navigate(to: .basicInfo)
+                hideKeyboard()
+                viewModel.submitOTP(otp: otpCode)
             }){
                 Text("Submit")
                     .font(.headline)
@@ -95,7 +100,7 @@ struct OPTVerifyView: View {
 }
 
 #Preview {
-    OPTVerifyView()
+    OTPVerifyView(router : Router())
 }
 
 

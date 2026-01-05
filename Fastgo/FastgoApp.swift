@@ -18,8 +18,8 @@ struct FastgoApp: App {
                     .navigationDestination(for: Router.AuthFlow.self){ destination in
                         switch destination {
                         case .onboarding: OnboardingView(appState: appState, router: router)
-                        case .signIn: SignInView()
-                        case .verifyOTP: OPTVerifyView()
+                        case .signIn: AuthView(router: router)
+                        case .verifyOTP: OTPVerifyView(router: router)
                         case .newOnboardingSuccess : NewOnboardingSuccessView()
                         case .basicInfo : BasicInfoView()
                         case .home: HomeView()
@@ -43,7 +43,7 @@ struct RootView: View {
         if !appState.hasSeenOnboarding {
             OnboardingView(appState: appState, router: router)
         } else if !appState.isLoggedIn {
-            SignInView()
+            AuthView(router: router)
         } else if !appState.isProfileComplete {
             BasicInfoView()
         } else {

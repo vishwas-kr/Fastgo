@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct CountryPicker: View {
-    @State private var selectedCountry: Country = Country(name: "India", code: "IN", dialCode: "+91")
     @State private var showingCountryPicker = false
+    @Binding var selectedCountry: Country
     var body: some View {
         Button(action: {
             showingCountryPicker.toggle()

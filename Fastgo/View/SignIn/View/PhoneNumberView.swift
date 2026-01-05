@@ -7,13 +7,9 @@
 
 import SwiftUI
 struct PhoneNumberView : View {
-    @State private var text = ""
     @FocusState private var isFocused : Bool
-    @StateObject private var viewModel = SignInViewModel.shared
-    @State private var navigateOtp : Bool = false
-    @EnvironmentObject private var router : Router
+    @StateObject var viewModel : AuthViewModel
     var body: some View {
-        // NavigationStack {
         VStack {
             VStack(spacing:8){
                 Text("Enter your mobile \n number")
@@ -29,8 +25,8 @@ struct PhoneNumberView : View {
             }
             Spacer()
             HStack{
-                CountryPicker()
-                TextField("Enter phone number",text: $text)
+                CountryPicker(selectedCountry: $viewModel.selectedCountry)
+                TextField("Enter phone number",text: $viewModel.phoneNumber)
                     .focused($isFocused)
                     .font(.subheadline)
                     .fontWeight(.medium)
@@ -43,12 +39,7 @@ struct PhoneNumberView : View {
                     .stroke(isFocused ? Color.green : Color(.systemGray6), lineWidth: 1)
             )
             Spacer()
-            Button(action:{
-                hideKeyboard()
-                // viewModel.siginInStep = .otp
-                //navigateOtp.toggle()
-                router.navigate(to: .verifyOTP)
-            }){
+            Button(action:viewModel.buttonAction){
                 Text("Continue")
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -58,9 +49,9 @@ struct PhoneNumberView : View {
                     .frame(height:55)
                     .background(.green)
                     .clipShape(Capsule())
-                    .onChange(of: text) {_, newValue in
+                    .onChange(of: viewModel.phoneNumber) {_, newValue in
                         let filtered = newValue.filter { $0.isNumber }
-                        text = String(filtered.prefix(10))
+                        viewModel.phoneNumber = String(filtered.prefix(10))
                     }
             }
         }
@@ -68,9 +59,5 @@ struct PhoneNumberView : View {
         .frame(maxHeight: UIScreen.main.bounds.height * 0.35)
         .background(.white)
         .clipShape(RoundedCorners(radius: 40, corners: [.topLeft, .topRight]))
-        //        .navigationDestination(isPresented: $navigateOtp){
-        //            OPTVerifyView1()
-        //        }
-        //  }
     }
 }

@@ -9,10 +9,9 @@ import SwiftUI
 
 struct CountryPickerListView: View {
     @Binding var selectedCountry: Country
-    @Environment(\.dismiss) var dismiss // Use @Environment to dismiss the sheet
+    @Environment(\.dismiss) var dismiss
     
-    // In a real app, load this data from a JSON file or NSLocale
-    let countries: [Country] = CountryConstant.countries // Sort alphabetically
+    let countries: [Country] = CountryConstant.countries
     
     var body: some View {
         NavigationView {
@@ -23,7 +22,7 @@ struct CountryPickerListView: View {
                     Spacer()
                     Text(country.dialCode)
                 }
-                .contentShape(Rectangle()) // Make the whole row tappable
+                .contentShape(Rectangle())
                 .onTapGesture {
                     selectedCountry = country
                     dismiss()
