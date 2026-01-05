@@ -13,7 +13,7 @@ struct OnboardingView : View {
     @StateObject private var viewModel: OnboardingViewModel
     
     init(appState: AppStateManager, router: Router) {
-        _viewModel = StateObject(
+        _viewModel = .init(
             wrappedValue: OnboardingViewModel(
                 appState: appState,
                 router: router
