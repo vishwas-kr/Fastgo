@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct OnboardingView : View {
-    @State private var currentPage = 0
-    @State private var navigateToSignIn = false
     @EnvironmentObject private var router : Router
+    @EnvironmentObject private var appState : AppStateManager
+    @StateObject private var viewModel: OnboardingViewModel
+    
+    init(appState: AppStateManager, router: Router) {
+        _viewModel = StateObject(
+            wrappedValue: OnboardingViewModel(
+                appState: appState,
+                router: router
+            )
+        )
+    }
+    
     var body : some View {
-        // NavigationStack {
         ZStack{
             VStack {
                 Image("on2")
@@ -29,58 +38,56 @@ struct OnboardingView : View {
                     .foregroundStyle(.white)
                     .overlay(
                         VStack{
-                            HStack{
-                                ForEach(0..<OnboardingPage.allCases.count,id:\.self) {index in
-                                    Circle()
-                                        .fill(currentPage == index ? Color.pink : Color(.systemGray4))
-                                        .frame(width: currentPage == index ? 12 : 8)
-                                        .animation(.spring(), value:currentPage)
-                                }
-                            }.padding()
+                            pageIndicator
                             
-                            TabView(selection: $currentPage){
-                                ForEach(OnboardingPage.allCases, id: \.rawValue){ page in
-                                    OnboardingText(page: page)
-                                        .tag(page.rawValue)
-                                    
-                                }
-                            }
-                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                            .allowsHitTesting(false)
+                            onboardingPages
                             
-                            
-                            Button(action:{
-                                if currentPage < OnboardingPage.allCases.count-1 {
-                                    currentPage+=1
-                                } else {
-                                   // navigateToSignIn = true
-                                    router.navigate(to: .signIn)
-                                }
-                            }){
-                                Text(currentPage < OnboardingPage.allCases.count-1 ? "Next" : "Get Started")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(.white)
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height:55)
-                                    .background(.green)
-                                    .clipShape(Capsule())
-                                
-                            }
+                            actionButton
                         }.padding()
                     )
             }
         }
-        //            .navigationDestination(isPresented: $navigateToSignIn){
-        //                SignInView()
-        //            }
-        // }
+    }
+    private var pageIndicator: some View {
+        HStack{
+            ForEach(0..<viewModel.totalPages,id:\.self) {index in
+                Circle()
+                    .fill(viewModel.currentPage == index ? Color.pink : Color(.systemGray4))
+                    .frame(width: viewModel.currentPage == index ? 12 : 8)
+                    .animation(.spring(), value:viewModel.currentPage)
+            }
+        }.padding()
+    }
+    
+    private var onboardingPages: some View {
+        TabView(selection: $viewModel.currentPage) {
+            ForEach(OnboardingPage.allCases, id: \.rawValue) { page in
+                OnboardingText(page: page)
+                    .tag(page.rawValue)
+            }
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .allowsHitTesting(false)
+    }
+    
+    private var actionButton: some View {
+        Button(action:viewModel.nextButton){
+            Text(viewModel.buttonTitle)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .frame(height:55)
+                .background(.green)
+                .clipShape(Capsule())
+            
+        }
     }
 }
 
 
 #Preview {
-    OnboardingView()
+    OnboardingView(appState: AppStateManager.shared, router: Router())
 }
 
