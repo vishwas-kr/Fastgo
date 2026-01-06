@@ -8,15 +8,13 @@
 import SwiftUI
 
 struct OnboardingView : View {
-    @EnvironmentObject private var router : Router
     @EnvironmentObject private var appState : AppStateManager
     @StateObject private var viewModel: OnboardingViewModel
     
-    init(appState: AppStateManager, router: Router) {
+    init(appState: AppStateManager) {
         _viewModel = .init(
             wrappedValue: OnboardingViewModel(
-                appState: appState,
-                router: router
+                appState: appState
             )
         )
     }
@@ -88,6 +86,6 @@ struct OnboardingView : View {
 
 
 #Preview {
-    OnboardingView(appState: AppStateManager.shared, router: Router())
+    OnboardingView(appState: AppStateManager.shared)
 }
 

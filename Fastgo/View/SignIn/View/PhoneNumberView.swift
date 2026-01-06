@@ -8,6 +8,7 @@
 import SwiftUI
 struct PhoneNumberView : View {
     @FocusState private var isFocused : Bool
+    @State private var showOTPView : Bool = false
     @StateObject var viewModel : AuthViewModel
     var body: some View {
         VStack {
@@ -39,7 +40,15 @@ struct PhoneNumberView : View {
                     .stroke(isFocused ? Color.green : Color(.systemGray6), lineWidth: 1)
             )
             Spacer()
-            Button(action:viewModel.buttonAction){
+            Button(action:{
+                isFocused = false
+                Task {
+                    await viewModel.sendOTP()
+                    if viewModel.errorMessage == nil {
+                        showOTPView = true
+                    }
+                }
+            }){
                 Text("Continue")
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -59,5 +68,15 @@ struct PhoneNumberView : View {
         .frame(maxHeight: UIScreen.main.bounds.height * 0.35)
         .background(.white)
         .clipShape(RoundedCorners(radius: 40, corners: [.topLeft, .topRight]))
+        .navigationDestination(isPresented: $showOTPView){
+            OTPVerifyView(viewModel: viewModel)
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            if let error = viewModel.errorMessage {
+                Text(error)
+            }
+        }
     }
 }

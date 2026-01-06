@@ -11,11 +11,9 @@ class OnboardingViewModel : ObservableObject {
     @Published var currentPage: Int = 0
     
     private let appState: AppStateManager
-    private let router: Router
     
-    init(appState: AppStateManager, router: Router) {
+    init(appState: AppStateManager) {
         self.appState = appState
-        self.router = router
     }
     
     
@@ -31,7 +29,7 @@ class OnboardingViewModel : ObservableObject {
         isLastPage ? "Get Started" : "Next"
     }
     
-    func nextButton(){
+    @MainActor func nextButton(){
         if isLastPage {
             completeOnboarding()
         } else {
@@ -39,8 +37,7 @@ class OnboardingViewModel : ObservableObject {
         }
     }
     
-    private func completeOnboarding() {
-        router.navigate(to: .signIn)
-        appState.setOnboadringSeen()
+    @MainActor private func completeOnboarding() {
+        appState.completeOnboarding()
     }
 }

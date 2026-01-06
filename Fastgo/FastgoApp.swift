@@ -9,28 +9,14 @@ import SwiftUI
 
 @main
 struct FastgoApp: App {
-    @StateObject private var router = Router()
     @StateObject private var appState = AppStateManager.shared
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $router.navPath){
-                RootView()
-                    .navigationDestination(for: Router.AuthFlow.self){ destination in
-                        switch destination {
-                        case .onboarding: OnboardingView(appState: appState, router: router)
-                        case .signIn: AuthView(router: router)
-                        case .verifyOTP: OTPVerifyView(router: router)
-                        case .newOnboardingSuccess : NewOnboardingSuccessView()
-                        case .basicInfo : BasicInfoView()
-                        case .home: HomeView()
-                        }
-                    }
-            }
-            .environmentObject(router)
-            .environmentObject(appState)
-            .onAppear{
-                appState.checkAppStatus()
-            }
+            RootView()
+                .environmentObject(appState)
+                .task {
+                    await appState.initializeApp()
+                }
         }
     }
 }
@@ -38,16 +24,48 @@ struct FastgoApp: App {
 
 struct RootView: View {
     @EnvironmentObject var appState: AppStateManager
-    @EnvironmentObject var router: Router
+    
     var body: some View {
-        if !appState.hasSeenOnboarding {
-            OnboardingView(appState: appState, router: router)
-        } else if !appState.isLoggedIn {
-            AuthView(router: router)
-        } else if !appState.isProfileComplete {
+        currentView
+            .animation(.easeInOut, value: appState.currentFlow)
+    }
+    
+    @ViewBuilder
+    private var currentView: some View {
+        switch appState.currentFlow {
+        case .loading:
+            LoadingView()
+            
+        case .onboarding:
+            OnboardingView(appState: appState)
+            
+        case .signIn, .verifyOTP:
+            AuthFlowView()
+            
+        case .basicInfo:
             BasicInfoView()
-        } else {
+            
+        case .home:
             HomeView()
+        }
+    }
+}
+
+
+struct LoadingView: View {
+    var body: some View {
+        ZStack {
+            Color(.systemBackground)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 20) {
+                ProgressView()
+                    .scaleEffect(1.5)
+                
+                Text("Fastgo")
+                    .font(.title)
+                    .fontWeight(.bold)
+            }
         }
     }
 }
