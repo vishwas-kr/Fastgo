@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3A1DBD122F0C2E0D0059F4C0 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 3A1DBD112F0C2E0D0059F4C0 /* Auth */; };
+		3A1DBD142F0C2E0D0059F4C0 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3A1DBD132F0C2E0D0059F4C0 /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		3A242F2D2EFDAE04004EE03E /* Fastgo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fastgo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +28,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A1DBD142F0C2E0D0059F4C0 /* Supabase in Frameworks */,
+				3A1DBD122F0C2E0D0059F4C0 /* Auth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +72,8 @@
 			);
 			name = Fastgo;
 			packageProductDependencies = (
+				3A1DBD112F0C2E0D0059F4C0 /* Auth */,
+				3A1DBD132F0C2E0D0059F4C0 /* Supabase */,
 			);
 			productName = Fastgo;
 			productReference = 3A242F2D2EFDAE04004EE03E /* Fastgo.app */;
@@ -94,6 +103,9 @@
 			);
 			mainGroup = 3A242F242EFDAE04004EE03E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3A1DBD102F0C2E0D0059F4C0 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3A242F2E2EFDAE04004EE03E /* Products */;
 			projectDirPath = "";
@@ -324,6 +336,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3A1DBD102F0C2E0D0059F4C0 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase-community/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3A1DBD112F0C2E0D0059F4C0 /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A1DBD102F0C2E0D0059F4C0 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		3A1DBD132F0C2E0D0059F4C0 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A1DBD102F0C2E0D0059F4C0 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3A242F252EFDAE04004EE03E /* Project object */;
 }
