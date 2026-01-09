@@ -21,7 +21,7 @@ struct SupabaseService {
     }
     
     var currentUser : User? {
-        get async { try? await client.auth.session.user }
+        get async { try? await client.auth.session.user}
     }
     
     func signInWithOtp (phoneNumber: String) async throws {
@@ -53,6 +53,36 @@ struct SupabaseService {
     func signOut() async throws {
         try await client.auth.signOut()
     }
+    
+//    func createUser(with id:String,phone:String) async throws {
+//        let user = BasicUser (
+//            id: id,
+//            name: "",
+//            phone: phone,
+//            gender: "",
+//            totalRides: 0,
+//            totalDistance: 0,
+//            profileImageUrl: "",
+//            dateOfBirth: nil,
+//            userStatus: UserStatus(basicInfoCompleted: false)
+//        )
+//    }
+//    
+//    func addBasicInfoDetails(with id : String, name: String, dob: String, gender: String , status: UserStatus) async throws {
+//        let user = BasicUser(
+//            id: id,
+//            name: name,
+//            phone: "",
+//            gender: gender,
+//            totalRides: 0,
+//            totalDistance: 0,
+//            profileImageUrl: "",
+//            dateOfBirth: <#T##Date?#>
+//            userStatus: status
+//        )
+//        
+//        try await client.from("users").insert(user).execute()
+//    }
 }
 
 

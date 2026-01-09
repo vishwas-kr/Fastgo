@@ -57,11 +57,12 @@ struct PhoneNumberView : View {
                     .frame(maxWidth: .infinity)
                     .frame(height:55)
                     .background(.green)
-                    .clipShape(Capsule())
-                    .onChange(of: viewModel.phoneNumber) {_, newValue in
-                        let filtered = newValue.filter { $0.isNumber }
-                        viewModel.phoneNumber = String(filtered.prefix(10))
-                    }
+                   
+            }
+            .clipShape(Capsule())
+            .onChange(of: viewModel.phoneNumber) {_, newValue in
+                let filtered = newValue.filter { $0.isNumber }
+                viewModel.phoneNumber = String(filtered.prefix(10))
             }
         }
         .padding()

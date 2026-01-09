@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NameView: View {
     @FocusState var isFocused : Bool
-    @State var name = ""
+    @Binding var name : String
     var body: some View {
         TextField("Your name",text:$name)
             .focused($isFocused)
@@ -27,7 +27,7 @@ struct NameView: View {
 }
 
 #Preview {
-    NameView()
+    NameView(name: .constant("Vish"))
 }
 
 struct BasicInfoHeaderView : View {

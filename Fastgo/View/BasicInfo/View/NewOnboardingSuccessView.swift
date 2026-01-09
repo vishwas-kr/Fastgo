@@ -9,7 +9,6 @@ import SwiftUI
 
 struct NewOnboardingSuccessView: View {
     @State private var pop = false
-    @EnvironmentObject private var router : Router
     var body: some View {
         VStack{
             Image("verified")
@@ -37,9 +36,12 @@ struct NewOnboardingSuccessView: View {
             withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
                 pop = true
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                router.navigate(to: .home)
-            }
+        }
+        .onAppear{
+            Task {
+                    try? await Task.sleep(nanoseconds: 3_000_000_000)
+                    AppStateManager.shared.completeBasicInfo()
+                }
         }
     }
 }

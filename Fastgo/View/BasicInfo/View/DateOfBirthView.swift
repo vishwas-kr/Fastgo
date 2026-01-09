@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct DateOfBirthView: View {
+    @Binding var dateOfBirth : Date
     var body: some View {
         VStack{
-            CustomWheelDatePickerView()
+            CustomWheelDatePickerView(selectedDate: $dateOfBirth)
                 .padding(.vertical,22)
         }
     }
 }
 
 #Preview {
-    DateOfBirthView()
+    DateOfBirthView(dateOfBirth: .constant(Date()))
 }
