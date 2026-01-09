@@ -6,6 +6,7 @@
 //
 import SwiftUI
 
+@MainActor
 class AuthViewModel : ObservableObject {
     private let appState = AppStateManager.shared
     private let supabaseService = SupabaseService.shared
@@ -139,10 +140,6 @@ class AuthViewModel : ObservableObject {
         resendTimer = nil
         resendCountdown = 60
         canResendOTP = false
-    }
-    
-    deinit {
-        stopResendTimer()
     }
 }
 

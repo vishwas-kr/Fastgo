@@ -23,10 +23,11 @@ class AppStateManager : ObservableObject {
     @Published var userPhoneNumber : String?
     @Published var userID : String?
     
+    @Published var currentUser : BasicUser?
+    
     
     private init() {
         self.hasSeenOnboarding = UserDefaults.standard.bool(forKey: "hasOnboardingSeen")
-        // self.hasCompletedProfile = UserDefaults.standard.bool(forKey: hasCompletedProfileKey)
     }
     
     
@@ -45,10 +46,13 @@ class AppStateManager : ObservableObject {
         print("Onboarding completed: \(hasSeenOnboarding) ✅")
     }
     
-    func setAuthenticated(userId: String, phoneNumber: String){
+    func setAuthenticated(userId: String, phoneNumber: String) async {
         self.isAuthenticated = true
         self.userID = userId
         self.userPhoneNumber = phoneNumber
+        
+        await fetchOrCreateUser(userId:userId,phoneNumber:phoneNumber)
+        
         updateFlow()
         print("User AUthenticated ✅")
     }
@@ -65,23 +69,24 @@ class AppStateManager : ObservableObject {
             isAuthenticated = false
             userID = nil
             userPhoneNumber = nil
+            currentUser = nil
             
             //  UserDefaults.standard.removeObject(forKey: hasCompletedProfileKey)
             updateFlow()
-            print("User signed out ✅ ")
+            print("User signed out")
             
         } catch {
-            print("❌ Error signing out: \(error.localizedDescription)")
+            print("Error signing out: \(error.localizedDescription)")
         }
     }
     
-    func resetApp() {
+    func resetApp() async {
         hasSeenOnboarding = false
         isAuthenticated = false
         hasCompletedProfile = false
         userID = nil
         userPhoneNumber = nil
-        
+        try? await supabaseService.signOut()
         UserDefaults.standard.removeObject(forKey: "hasOnboardingSeen")
         // UserDefaults.standard.removeObject(forKey: hasCompletedProfileKey)
         
@@ -97,14 +102,15 @@ class AppStateManager : ObservableObject {
                 isAuthenticated = true
                 userID = session.user.id.uuidString
                 userPhoneNumber = session.user.phone
-                print("✅ Found existing session for user: \(userID ?? "unknown")")
+                await fetchUserData(userID: session.user.id.uuidString)
+                print("Found existing session for user: \(userID ?? "unknown")")
             } else {
                 isAuthenticated = false
                 print("No existing session found ℹ️")
             }
         } catch {
             isAuthenticated = false
-            print("⚠️ Error checking session: \(error.localizedDescription)")
+            print("Error checking session: \(error.localizedDescription)")
         }
     }
     
@@ -137,6 +143,44 @@ class AppStateManager : ObservableObject {
                 └─ Current Flow: \(currentFlow)
                 
                 """)
+    }
+    
+    private func fetchOrCreateUser(userId: String, phoneNumber: String) async {
+        do {
+            if let user = try await UserService.shared.getUser(userId: userId) {
+                currentUser = user
+                hasCompletedProfile = user.userStatus.basicInfoCompleted
+                print("Existing user. Profile Completed: \(hasCompletedProfile)")
+            } else {
+                print("fetchOrCreateUser")
+                let newUser = try await UserService.shared.createUser(userId: userId, phoneNumber: phoneNumber)
+                
+                currentUser = newUser
+                hasCompletedProfile = false
+                print("New user created in DB")
+            }
+            
+        } catch {
+            print("Error in fetchOrCreateUser: \(error)")
+            hasCompletedProfile = false
+        }
+    }
+    
+    private func fetchUserData(userID: String) async {
+        do {
+            let user = try await UserService.shared.getUser(userId: userID)
+            if let user = user {
+                currentUser = user
+                hasCompletedProfile = user.userStatus.basicInfoCompleted
+                print("User data fetched. Basic info complete: \(hasCompletedProfile)")
+            } else {
+                hasCompletedProfile = false
+                print("User not found in database")
+            }
+        } catch {
+            print("Error fetching user data: \(error.localizedDescription)")
+            hasCompletedProfile = false
+        }
     }
 }
 

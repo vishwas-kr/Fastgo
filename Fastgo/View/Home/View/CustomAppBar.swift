@@ -31,7 +31,9 @@ struct CustomAppBar: View {
                     .lineLimit(1)
             }.frame(maxWidth: 200)
             Spacer()
-            Button(action:{},label: {
+            Button(action:{
+                Task{ await  AppStateManager.shared.signOut()}
+            },label: {
                 Image(systemName: "bell")
                     .font(.title)
                     .foregroundStyle(.black)

@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct CustomWheelDatePickerView: View {
-
+    
     private let calendar = Calendar.current
     private let today = Date()
     
     @State private var month: String
     @State private var day: Int
     @State private var year: Int
+    @Binding var selectedDate: Date
     
     let months = Calendar.current.monthSymbols
     let years = Array(1990...2026)
@@ -26,8 +27,9 @@ struct CustomWheelDatePickerView: View {
         return Array(range)
     }
     
-    init() {
-        let components = Calendar.current.dateComponents([.month, .day, .year], from: Date())
+    init(selectedDate: Binding<Date>) {
+        self._selectedDate = selectedDate
+        let components = Calendar.current.dateComponents([.month, .day, .year], from: selectedDate.wrappedValue)
         _month = State(initialValue: Calendar.current.monthSymbols[components.month! - 1])
         _day = State(initialValue: components.day!)
         _year = State(initialValue: components.year!)
@@ -48,7 +50,7 @@ struct CustomWheelDatePickerView: View {
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.green, lineWidth: 1)
-                .frame(height: 66) 
+                .frame(height: 66)
         )
         .mask(
             LinearGradient(
@@ -59,21 +61,35 @@ struct CustomWheelDatePickerView: View {
         )
         .onChange(of: month) { _, _ in
             adjustDayIfNeeded()
+            updateSelectedDate()
+        }
+        .onChange(of: day) { _, _ in
+            updateSelectedDate()
         }
         .onChange(of: year) { _, _ in
             adjustDayIfNeeded()
+            updateSelectedDate()
         }
     }
-    
     private func adjustDayIfNeeded() {
         if !days.contains(day) {
             day = days.last!
         }
     }
+    
+    private func updateSelectedDate() {
+        let monthIndex = months.firstIndex(of: month)! + 1
+        if let newDate = calendar.date(from: DateComponents(year: year, month: monthIndex, day: day, hour: 12)) {
+            selectedDate = newDate
+            let formatter = DateFormatter()
+            formatter.dateStyle = .long
+            formatter.timeZone = calendar.timeZone
+        }
+    }
 }
 
 #Preview {
-    CustomWheelDatePickerView()
+    CustomWheelDatePickerView(selectedDate: .constant(Date()))
 }
 
 
@@ -93,17 +109,21 @@ struct WheelPicker<T: Hashable & CustomStringConvertible>: View {
                     VStack(spacing: 0) {
                         ForEach(Array(items.enumerated()), id: \.element) { index, item in
                             GeometryReader { itemGeo in
-                                let itemCenter = itemGeo.frame(in: .global).midY
-                                let distance = abs(itemCenter - centerY - geo.frame(in: .global).minY)
+                                let itemCenter = itemGeo.frame(in: .named("pickerCoordinateSpace")).midY
+                                let distance = abs(itemCenter - centerY)
+                                let isCentered = distance < rowHeight / 2
                                 
                                 Text(item.description)
                                     .font(.headline)
                                     .fontWeight(.semibold)
-                                    .foregroundColor(
-                                        distance < rowHeight / 2 ? .black : .gray
-                                    )
+                                    .foregroundColor(isCentered ? .black : .gray)
                                     .frame(height: rowHeight)
                                     .frame(maxWidth: .infinity)
+                                    .onChange(of: isCentered) { _, newValue in
+                                        if newValue {
+                                            selection = item
+                                        }
+                                    }
                             }
                             .frame(height: rowHeight)
                             .id(item)
@@ -111,44 +131,10 @@ struct WheelPicker<T: Hashable & CustomStringConvertible>: View {
                     }
                     .padding(.vertical, (geo.size.height - rowHeight) / 2)
                 }
+                .coordinateSpace(name: "pickerCoordinateSpace")
                 .onAppear {
                     proxy.scrollTo(selection, anchor: .center)
                 }
-                .onChange(of: selection) { _, newValue in
-                    withAnimation(.easeOut) {
-                        proxy.scrollTo(newValue, anchor: .center)
-                    }
-                }
-                .gesture(
-                    DragGesture()
-                        .onEnded { _ in
-                            snapToNearest(proxy: proxy, geometry: geo)
-                        }
-                )
-            }
-        }
-    }
-    
-    
-    private func snapToNearest(proxy: ScrollViewProxy, geometry: GeometryProxy) {
-        let center = geometry.size.height / 2
-        
-        var closest: (item: T, distance: CGFloat)?
-        
-        for item in items {
-            _ = item
-            if let frame = geometry.frame(in: .global).origin.y as CGFloat? {
-                let distance = abs(frame - center)
-                if closest == nil || distance < closest!.distance {
-                    closest = (item, distance)
-                }
-            }
-        }
-        
-        if let selected = closest?.item {
-            selection = selected
-            withAnimation(.easeOut) {
-                proxy.scrollTo(selected, anchor: .center)
             }
         }
     }

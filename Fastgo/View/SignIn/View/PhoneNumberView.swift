@@ -58,10 +58,10 @@ struct PhoneNumberView : View {
                     .frame(height:55)
                     .background(.green)
                     .clipShape(Capsule())
-                    .onChange(of: viewModel.phoneNumber) {_, newValue in
-                        let filtered = newValue.filter { $0.isNumber }
-                        viewModel.phoneNumber = String(filtered.prefix(10))
-                    }
+            }
+            .onChange(of: viewModel.phoneNumber) {_, newValue in
+                let filtered = newValue.filter { $0.isNumber }
+                viewModel.phoneNumber = String(filtered.prefix(10))
             }
         }
         .padding()

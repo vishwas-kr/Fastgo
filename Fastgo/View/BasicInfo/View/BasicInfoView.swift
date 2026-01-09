@@ -8,99 +8,100 @@
 import SwiftUI
 
 struct BasicInfoView: View {
-    @State private var currentPage : BasicInfo = .name
-    @State private var navigateToSuccsees : Bool = false
-    @EnvironmentObject private var router : Router
+    @StateObject private var viewModel = BasicInfoViewModel()
+    @EnvironmentObject var appState: AppStateManager
     var body: some View {
-        //  NavigationStack {
-        VStack{
-            HStack{
-                ForEach(0...BasicInfo.allCases.count-1, id:\.self){index in
-                    Rectangle()
-                        .foregroundColor(index <= currentPage.rawValue ? .green : .gray.opacity(0.2))
-                        .frame(maxWidth: 55, maxHeight: 8)
-                        .cornerRadius(12)
-                        .animation(.spring(), value:currentPage)
-                }
-            }.padding(.bottom,16)
-            
-            BasicInfoHeaderView(title: currentPage.title, description: currentPage.description)
-                .padding()
-            
-            Group {
-                switch currentPage {
-                case .name:
-                    NameView()
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
-                case .dob:
-                    DateOfBirthView()
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
-                case .gender:
-                    GenderCardView()
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
-                }
-            }
-            .animation(.easeInOut(duration: 0.35), value: currentPage)
-            
-            Spacer()
-            
-            HStack{
+        NavigationStack {
+            VStack{
+                progressBar
                 
-                if (currentPage.rawValue != 0){
-                    Button(action:back){
-                        Text("Back")
+                BasicInfoHeaderView(title: viewModel.currentPage.title, description: viewModel.currentPage.description)
+                    .padding()
+                
+                Group {
+                    switch viewModel.currentPage {
+                    case .name:
+                        NameView(name: $viewModel.name)
+                            .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    case .dob:
+                        DateOfBirthView(dateOfBirth: $viewModel.dateOfBirth)
+                            .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    case .gender:
+                        GenderCardView(selectedGender: $viewModel.gender)
+                            .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    }
+                }
+                .animation(.easeInOut(duration: 0.35), value: viewModel.currentPage)
+                
+                Spacer()
+                
+                HStack{
+                    
+                    if (viewModel.currentPage.rawValue != 0){
+                        Button(action:viewModel.backButton){
+                            Text("Back")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.green)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .frame(height:55)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 30)
+                                        .stroke(.green)
+                                )
+                        }
+                    }
+                    
+                    Button(action:  {
+                        if viewModel.currentPage.rawValue < BasicInfo.allCases.count-1 {
+                            viewModel.nextButton()
+                        } else {
+                            Task{
+                                await viewModel.submitBasicInfoDetails(userId: appState.userID ?? "")
+                            }
+                        }
+                    }){
+                        Text(viewModel.currentPage.rawValue >= 2 ? "Submit" : "Next")
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.green)
+                            .foregroundStyle(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
                             .frame(height:55)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 30)
-                                    .stroke(.green)
-                            )
+                            .background(.green)
+                            .clipShape(Capsule())
+                        
                     }
                 }
                 
-                Button(action: {
-                    if currentPage.rawValue < BasicInfo.allCases.count-1 {
-                        next()
-                    } else {
-                        //navigateToSuccsees = true
-                        router.navigate(to: .newOnboardingSuccess)
-                    }
-                }){
-                    Text(currentPage.rawValue >= 2 ? "Submit" : "Next")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .frame(height:55)
-                        .background(.green)
-                        .clipShape(Capsule())
-                    
+            }
+            .padding()
+            .navigationBarBackButtonHidden(true)
+            .alert("Error", isPresented: $viewModel.showError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                if let error = viewModel.errorMessage {
+                    Text(error)
                 }
             }
-            
-        }
-        .padding()
-        .navigationBarBackButtonHidden(true)
-        // .navigationDestination(isPresented: $navigateToSuccsees){SuccessView()}
-        // }
-    }
-    
-    func back() {
-        if let prev = BasicInfo(rawValue: currentPage.rawValue - 1) {
-            currentPage = prev
+            .navigationDestination(isPresented: $viewModel.navigateToSuccsees){NewOnboardingSuccessView()}
         }
     }
     
-    func next() {
-        if let next = BasicInfo(rawValue: currentPage.rawValue + 1) {
-            currentPage = next
-        }
+    private var progressBar: some View {
+        HStack{
+            ForEach(0..<BasicInfo.allCases.count, id:\.self){index in
+                Rectangle()
+                    .foregroundColor(index <= viewModel.currentPage.rawValue ? .green : .gray.opacity(0.2))
+                    .frame(maxWidth: 55, maxHeight: 8)
+                    .cornerRadius(12)
+                    .animation(.spring(), value:viewModel.currentPage)
+            }
+        }.padding(.bottom,16)
     }
+    
+    
 }
 
 #Preview {

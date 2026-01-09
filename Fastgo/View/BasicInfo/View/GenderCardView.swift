@@ -8,23 +8,23 @@
 import SwiftUI
 
 struct GenderCardView: View {
-    @State private var selectedGender: Gender?
+    @Binding var selectedGender : Gender
     var body: some View {
         HStack (spacing:20){
-            GenderBox(image: "man", gender: .male ,selectedGender: $selectedGender)
+            GenderBox(image: "man", gender: .male, selectedGender: $selectedGender)
             GenderBox(image: "women", gender: .female, selectedGender: $selectedGender)
         }.padding(.vertical,22)
     }
 }
 
 #Preview {
-    GenderCardView()
+    GenderCardView(selectedGender: .constant(.male))
 }
 
 struct GenderBox: View {
     let image : String
     let gender: Gender
-    @Binding var  selectedGender : Gender?
+    @Binding var selectedGender : Gender
     var isSelected : Bool {
         selectedGender == gender
     }
