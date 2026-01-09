@@ -15,7 +15,7 @@ class AppStateManager : ObservableObject {
     
     private let supabaseService = SupabaseService.shared
     
-    @Published private(set) var currentFlow : AppFlow = .onboarding
+    @Published private(set) var currentFlow : AppFlow = .loading
     @Published private(set) var hasSeenOnboarding : Bool = false
     @Published private(set) var isAuthenticated : Bool = false
     @Published private(set) var hasCompletedProfile : Bool = false
