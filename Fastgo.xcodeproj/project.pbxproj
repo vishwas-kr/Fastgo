@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3A1DBD122F0C2E0D0059F4C0 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 3A1DBD112F0C2E0D0059F4C0 /* Auth */; };
 		3A1DBD142F0C2E0D0059F4C0 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3A1DBD132F0C2E0D0059F4C0 /* Supabase */; };
+		3A2135FF2F12851000C63041 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 3A2135FE2F12851000C63041 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 			files = (
 				3A1DBD142F0C2E0D0059F4C0 /* Supabase in Frameworks */,
 				3A1DBD122F0C2E0D0059F4C0 /* Auth in Frameworks */,
+				3A2135FF2F12851000C63041 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +76,7 @@
 			packageProductDependencies = (
 				3A1DBD112F0C2E0D0059F4C0 /* Auth */,
 				3A1DBD132F0C2E0D0059F4C0 /* Supabase */,
+				3A2135FE2F12851000C63041 /* Lottie */,
 			);
 			productName = Fastgo;
 			productReference = 3A242F2D2EFDAE04004EE03E /* Fastgo.app */;
@@ -105,6 +108,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				3A1DBD102F0C2E0D0059F4C0 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				3A2135FD2F12851000C63041 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3A242F2E2EFDAE04004EE03E /* Products */;
@@ -346,6 +350,14 @@
 				minimumVersion = 2.5.1;
 			};
 		};
+		3A2135FD2F12851000C63041 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -358,6 +370,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3A1DBD102F0C2E0D0059F4C0 /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		3A2135FE2F12851000C63041 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A2135FD2F12851000C63041 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

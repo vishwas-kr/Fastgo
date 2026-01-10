@@ -13,8 +13,10 @@ struct LoadingView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
-                ProgressView()
-                    .scaleEffect(1.5)
+                LottieAnimation()
+                Text("Loading...")
+                    .font(.headline)
+                    .fontWeight(.semibold)
             }
         }
         .transition(.opacity)
