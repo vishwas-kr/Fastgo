@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CustomToolBarBackButton: View {
-    @EnvironmentObject private var router : Router
+    @EnvironmentObject private var router : HomeRouter
     var body: some View {
         Button {
             router.navigatePop()
