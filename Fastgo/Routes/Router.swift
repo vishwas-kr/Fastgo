@@ -6,20 +6,25 @@
 //
 
 import SwiftUI
-final class Router : ObservableObject {
+
+enum ProfileOptionRoutes : Hashable {
+    case myAccount
+    case paymentMethod
+    case rideHistory
+    case promoCode
+    case inviteFriends
+}
+
+enum HomeRoutes : Hashable {
+    case profile
+    case profileOptions(ProfileOptionRoutes)
+}
+
+final class HomeRouter : ObservableObject {
     
     @Published var navPath = NavigationPath()
     
-    enum AuthFlow : Hashable, Codable {
-        case onboarding
-        case signIn
-        case verifyOTP
-        case newOnboardingSuccess
-        case basicInfo
-        case home
-    }
-    
-    func navigate(to destination: AuthFlow ) {
+    func navigate(to destination: HomeRoutes ) {
         navPath.append(destination)
         print("ADDED PATH: \(navPath)")
     }
