@@ -79,8 +79,7 @@ struct HomeView: View {
                     case .rideHistory:
                         RideHistoryView()
                     case .promoCode:
-                        Text("Promo Code View")
-                            .navigationTitle("Promo Codes")
+                        PromoCodeView()
                     case .inviteFriends:
                         Text("Invite Friends View")
                             .navigationTitle("Invite Friends")
