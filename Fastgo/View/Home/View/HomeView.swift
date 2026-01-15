@@ -71,9 +71,9 @@ struct HomeView: View {
                 case .profileOptions(let option):
                     switch option {
                     case .myAccount:
-                        MyAccountView()                    case .paymentMethod:
-                        Text("Payment Method View")
-                            .navigationTitle("Payment Methods")
+                        MyAccountView()
+                    case .paymentMethod:
+                        PaymentView()
                     case .rideHistory:
                         RideHistoryView()
                     case .promoCode:
