@@ -28,10 +28,12 @@ struct CustomBackgroundView<Content: View>: View {
             VStack {
                 Image(imageName)
                     .resizable()
+                    .scaledToFill()
                     .frame(
                         width: UIScreen.main.bounds.width,
                         height: UIScreen.main.bounds.height * imageHeightRatio
                     )
+                    .clipped()
                     .ignoresSafeArea()
                 
                 Spacer()

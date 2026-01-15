@@ -63,3 +63,12 @@ enum PromoVariant: Int, CaseIterable {
         }
     }
 }
+
+
+struct PromoCode : Identifiable {
+    let id = UUID()
+    let image : String
+    let title : String
+    let description : String
+    let expiry : String
+}

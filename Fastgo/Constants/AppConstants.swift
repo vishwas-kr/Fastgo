@@ -29,4 +29,20 @@ struct AppImageConstants {
     static let scooter3 = "https://plus.unsplash.com/premium_vector-1748084731480-1f48480a5ca5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHNjb290ZXJ8ZW58MHwxfDB8fHww"
     
     static let scooter4 = "https://plus.unsplash.com/premium_vector-1747119032880-9fb231af246f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHNjb290ZXJ8ZW58MHwxfDB8fHww"
+    
+    static let rideHistory = "https://images.unsplash.com/vector-1754146318493-21c86aea0a24?q=80&w=2148&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    
+    static let parke = "https://plus.unsplash.com/premium_vector-1746763468673-93ee61c1e864?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    
+    static let ride = "https://plus.unsplash.com/premium_vector-1746864652491-42ffda7b801c?q=80&w=2148&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    
+    static let park2 = "https://plus.unsplash.com/premium_vector-1747662236177-966f085effeb?q=80&w=2242&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    
+    static let ride2 = "https://plus.unsplash.com/premium_vector-1747298185198-09a3718b4b7d?q=80&w=2302&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    
+    static let scan = "https://plus.unsplash.com/premium_vector-1746119139844-43296749b6e2?q=80&w=2148&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    
+    static let riders = "https://plus.unsplash.com/premium_vector-1746864652737-4e659555b1e7?q=80&w=2148&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    
+    static let nav = "https://plus.unsplash.com/premium_vector-1746864652496-bef1fc3485e3?q=80&w=2148&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 }
