@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct LocationButton: View {
+    let viewModel : MapViewModel
     var body: some View {
         HStack {
             Spacer()
-            Button(action:{},label: {
+            Button(action:{
+                viewModel.centerUserLocation()
+            },label: {
                 Image(systemName: "scope")
                     .font(.title)
                     .foregroundStyle(.green)

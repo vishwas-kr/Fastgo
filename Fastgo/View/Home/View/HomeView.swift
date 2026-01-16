@@ -12,23 +12,19 @@ struct HomeView: View {
     @State private var showSheet : Bool = false
     @StateObject private var router = HomeRouter()
     @StateObject private var viewModel = HomeViewModel()
-    @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.334_900, longitude: -122.009_020),
-        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    )
+    @StateObject private var mapViewModel = MapViewModel()
     
     var body: some View {
         NavigationStack(path: $router.navPath){
             ZStack(){
-                Map(coordinateRegion: $region, showsUserLocation: true)
-                    .ignoresSafeArea()
+                MapView(viewModel: mapViewModel)
                 
                 FadingGradient(color1: .newGray, color2:  Color.white.opacity(0.1), location1: 0.0, location2: 0.2, startPoint: .top, endPoint: .bottom)
                 
                 FadingGradient(color1: .newGray, color2:  Color.white.opacity(0.1), location1: 0.0, location2: 0.2, startPoint: .bottom, endPoint: .top)
                 
                 VStack{
-                    CustomAppBar()
+                    CustomAppBar(mapViewModel: mapViewModel)
                     
                     ScrollView(.horizontal,showsIndicators: false){
                         HStack {
@@ -39,7 +35,7 @@ struct HomeView: View {
                     }
                     Spacer()
                     
-                    LocationButton()
+                    LocationButton(viewModel: mapViewModel)
                     
                     Button(action:{
                         showSheet.toggle()
@@ -65,6 +61,7 @@ struct HomeView: View {
                 .padding(.horizontal)
                 
             }
+            .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: HomeRoutes.self){ route in
                 switch route {
                 case .profile: ProfileView()
@@ -86,7 +83,6 @@ struct HomeView: View {
                 
             }
         }
-        .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showSheet) {
             RideDetailsView()
                 .presentationDetents([.medium, .fraction(0.8)])

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CustomAppBar: View {
     @EnvironmentObject private var router : HomeRouter
+    @StateObject var mapViewModel : MapViewModel
     var body: some View {
             HStack{
                 Button(action:{
@@ -30,7 +31,7 @@ struct CustomAppBar: View {
                             .fontWeight(.light)
                             .foregroundStyle(.gray)
                     }
-                    Text("Texas, 30 avenue")
+                    Text(mapViewModel.userLocation)
                         .font(.headline)
                         .fontWeight(.light)
                         .lineLimit(1)
@@ -54,5 +55,5 @@ struct CustomAppBar: View {
 
 
 #Preview {
-    CustomAppBar()
+    CustomAppBar(mapViewModel: MapViewModel())
 }
