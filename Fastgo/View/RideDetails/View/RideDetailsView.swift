@@ -8,39 +8,28 @@
 import SwiftUI
 
 struct RideDetailsView: View {
-    @State private var showSheet : Bool = false
+    let annotation: RideAnnotation
+    @StateObject var mapViewModel: MapViewModel
+    
     var body: some View {
         VStack{
-            ScooterDetail()
-            VStack{
-                ScooterDetailFeatures()
+            ScooterDetail(annotation: annotation)
+            VStack(spacing:22){
+                ScooterRideActionFeatures(viewModel: mapViewModel)
                 
-                List {
-                    ForEach(ScooterDetailOptions.allCases,id:\.self){index in
-                        HStack(spacing:16){
-                            Image(index.image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width:40,height:40)
-                            Text(index.title)
-                                .font(.callout)
-                        }
-                    }
-                }
+                ScooterDetailsOptionsMenu()
                 
                 ScooterAction()
             }
-            .background(Color(.systemGray6))
+            .padding()
+            .background( Color(.systemGray6).ignoresSafeArea(edges: .bottom))
             .clipShape(RoundedCorners(radius:32))
-            .ignoresSafeArea()
+            
         }.background(.white)
     }
 }
 
 
-#Preview {
-    RideDetailsView()
-}
-
-
-
+ #Preview {
+     RideDetailsView(annotation:  RideAnnotation(title: "Uru Cruiser", vehicleDetails: .init(type: .seated, battery: 75, range: 22, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 37.333923550821474, longitude: -122.01485265580054))), mapViewModel: MapViewModel())
+ }

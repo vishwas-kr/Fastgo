@@ -48,7 +48,5 @@ struct ScooterAction: View {
                 )
             }
         }
-        .padding()
-        .padding(.bottom,30)
     }
 }

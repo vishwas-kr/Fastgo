@@ -7,41 +7,44 @@
 import SwiftUI
 
 struct ScooterDetail: View {
+    let annotation: RideAnnotation
+    
     var body: some View {
         HStack(alignment:.top){
             RoundedRectangle(cornerRadius: 24)
                 .fill(.cyan.opacity(0.5))
                 .frame(maxWidth: 180, maxHeight: 180)
                 .overlay(
-                    Image("scooter")
+                    Image(annotation.image)
                         .resizable()
                         .scaledToFit()
                         .offset(x:0,y:-20)
                         .rotationEffect(Angle(degrees: -10))
                 )
-            Spacer()
+                .padding(.trailing,8)
             VStack(alignment:.leading,spacing: 3){
-                Text("Electric Scooter")
+                Text(annotation.typeName)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.orange)
                 
-                Text("Scooter Flash")
+                Text(annotation.title)
                     .font(.title)
                     .fontWeight(.semibold)
+                    .lineLimit(1)
                     .padding(.bottom, 0)
                 
                 HStack{
                     Image(systemName: "bolt.circle")
                         .font(.title2)
                         .foregroundStyle(.green)
-                    Text("90%")
+                    Text("\(annotation.battery)%")
                         .font(.callout)
                         .fontWeight(.semibold)
                     Divider()
                         .background(.white)
                         .frame(height: 20)
-                    Text("~20 km")
+                    Text("~\(annotation.range) km")
                         .font(.callout)
                         .fontWeight(.semibold)
                 }
@@ -59,7 +62,7 @@ struct ScooterDetail: View {
                     .background(.green.opacity(0.2))
                     .clipShape(RoundedCorners(radius:5, corners: .allCorners))
                 
-                Text("$0.39/min + tax")
+                Text(String(format: "$%.2f/min + tax", annotation.perMinCost))
                     .font(.footnote)
                     .fontWeight(.semibold)
                     .padding(8)
@@ -73,5 +76,3 @@ struct ScooterDetail: View {
         .padding()
     }
 }
-
-

@@ -9,26 +9,22 @@ import SwiftUI
 import MapKit
 
 struct HomeView: View {
-    @State private var showSheet : Bool = false
     @StateObject private var router = HomeRouter()
     @StateObject private var viewModel = HomeViewModel()
-    @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.334_900, longitude: -122.009_020),
-        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    )
+    @StateObject private var mapViewModel = MapViewModel()
+    @State private var sheetHeight: CGFloat = .zero
     
     var body: some View {
         NavigationStack(path: $router.navPath){
             ZStack(){
-                Map(coordinateRegion: $region, showsUserLocation: true)
-                    .ignoresSafeArea()
+                MapView(mapViewModel: mapViewModel)
                 
                 FadingGradient(color1: .newGray, color2:  Color.white.opacity(0.1), location1: 0.0, location2: 0.2, startPoint: .top, endPoint: .bottom)
                 
                 FadingGradient(color1: .newGray, color2:  Color.white.opacity(0.1), location1: 0.0, location2: 0.2, startPoint: .bottom, endPoint: .top)
                 
                 VStack{
-                    CustomAppBar()
+                    CustomAppBar(mapViewModel: mapViewModel)
                     
                     ScrollView(.horizontal,showsIndicators: false){
                         HStack {
@@ -39,10 +35,10 @@ struct HomeView: View {
                     }
                     Spacer()
                     
-                    LocationButton()
+                    LocationButton(viewModel: mapViewModel)
                     
                     Button(action:{
-                        showSheet.toggle()
+                       
                     }){
                         HStack(spacing: 8) {
                             Image(systemName: "qrcode.viewfinder")
@@ -65,6 +61,7 @@ struct HomeView: View {
                 .padding(.horizontal)
                 
             }
+            .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: HomeRoutes.self){ route in
                 switch route {
                 case .profile: ProfileView()
@@ -86,10 +83,13 @@ struct HomeView: View {
                 
             }
         }
-        .navigationBarBackButtonHidden(true)
-        .sheet(isPresented: $showSheet) {
-            RideDetailsView()
-                .presentationDetents([.medium, .fraction(0.8)])
+        .sheet(item: $mapViewModel.selectedAnnotation) { annotation in
+            RideDetailsView(annotation: annotation, mapViewModel: mapViewModel)
+                .fixedSize(horizontal: false, vertical: true)
+                            .modifier(GetHeightModifier(height: $sheetHeight))
+                            .presentationDetents([.height(sheetHeight)])
+//            .presentationDetents([.fraction(0.5)])
+//                .environmentObject(mapViewModel)
         }
         .environmentObject(router)
     }
