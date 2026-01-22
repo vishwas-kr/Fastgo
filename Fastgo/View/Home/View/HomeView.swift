@@ -17,7 +17,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $router.navPath){
             ZStack(){
-                MapView(viewModel: mapViewModel)
+                MapView(mapViewModel: mapViewModel)
                 
                 FadingGradient(color1: .newGray, color2:  Color.white.opacity(0.1), location1: 0.0, location2: 0.2, startPoint: .top, endPoint: .bottom)
                 
