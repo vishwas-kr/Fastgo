@@ -17,14 +17,10 @@ struct MapView: View {
             UserAnnotation()
             ForEach(mapViewModel.annotations){annotation in
                 Annotation("", coordinate: annotation.coordinates ){
-                    Button {
-                        Task {
-                            await mapViewModel.selectAnnotation(annotation: annotation)
-                        }
-                    } label: {
+                    Button(action: { mapViewModel.selectAnnotation(annotation: annotation) }) {
                         CustomAnnotation(
-                            image: annotation.type.image,
-                            powerColor: annotation.type.powerColor
+                            image: annotation.image,
+                            powerColor: annotation.powerColor
                         )
                     }
                     .buttonStyle(.plain)

@@ -9,10 +9,10 @@ import SwiftUI
 import MapKit
 
 struct HomeView: View {
-    @State private var showSheet : Bool = false
     @StateObject private var router = HomeRouter()
     @StateObject private var viewModel = HomeViewModel()
     @StateObject private var mapViewModel = MapViewModel()
+    @State private var sheetHeight: CGFloat = .zero
     
     var body: some View {
         NavigationStack(path: $router.navPath){
@@ -38,7 +38,7 @@ struct HomeView: View {
                     LocationButton(viewModel: mapViewModel)
                     
                     Button(action:{
-                        showSheet.toggle()
+                       
                     }){
                         HStack(spacing: 8) {
                             Image(systemName: "qrcode.viewfinder")
@@ -83,9 +83,13 @@ struct HomeView: View {
                 
             }
         }
-        .sheet(isPresented: $showSheet) {
-            RideDetailsView()
-                .presentationDetents([.medium, .fraction(0.8)])
+        .sheet(item: $mapViewModel.selectedAnnotation) { annotation in
+            RideDetailsView(annotation: annotation, mapViewModel: mapViewModel)
+                .fixedSize(horizontal: false, vertical: true)
+                            .modifier(GetHeightModifier(height: $sheetHeight))
+                            .presentationDetents([.height(sheetHeight)])
+//            .presentationDetents([.fraction(0.5)])
+//                .environmentObject(mapViewModel)
         }
         .environmentObject(router)
     }

@@ -5,7 +5,7 @@
 //  Created by vishwas on 1/1/26.
 //
 
-enum ScooterDetailFeature: String, CaseIterable {
+enum ScooterRideActions: String, CaseIterable {
     case ring = "Ring"
     case navigate = "Navigate"
     case reportIssue = "Report Issue"
@@ -23,7 +23,7 @@ enum ScooterDetailFeature: String, CaseIterable {
 }
 
 
-enum ScooterDetailOptions : String, CaseIterable {
+enum ScooterRideMenu : String, CaseIterable {
     case promo
     case payment
     
