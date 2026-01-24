@@ -21,6 +21,10 @@ class MapViewModel : ObservableObject {
     @Published var selectedAnnotation : RideAnnotation?
     @Published var routePolyline : MKRoute?
     
+    private var hasCenteredOnce = false
+    private var lastGeocodedLocation: CLLocation?
+    
+    
     init (){
         bindLocation()
         bindAuthoriazationStatus()
@@ -30,9 +34,18 @@ class MapViewModel : ObservableObject {
     private func bindLocation() {
         locationManager.$currentLocation
             .compactMap { $0 }
+            .removeDuplicates(by: { old, new in
+                old.distance(from: new) < 10
+            })
             .sink { [weak self] location in
-                self?.updateCamera(location)
-                self?.reverseGeocode(location)
+                guard let self else { return }
+                
+                if !self.hasCenteredOnce {
+                    self.updateCamera(location)
+                    self.hasCenteredOnce = true
+                }
+                
+                self.reverseGeocode(location)
             }
             .store(in: &cancellables)
         
@@ -64,10 +77,16 @@ class MapViewModel : ObservableObject {
         updateCamera(location)
     }
     
-    private func reverseGeocode(_ location : CLLocation){
+    private func reverseGeocode(_ location: CLLocation) {
+        if let last = lastGeocodedLocation,
+           last.distance(from: location) < 50 {
+            return
+        }
+        
+        lastGeocodedLocation = location
         geocoder.cancelGeocode()
-        geocoder.reverseGeocodeLocation(location) {[weak self] placemarks, error in
-            
+        
+        geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
             if let error = error {
                 print("Geocoding Error: \(error)")
                 return
@@ -80,10 +99,13 @@ class MapViewModel : ObservableObject {
             let city = placemark.locality ?? ""
             let state = placemark.administrativeArea ?? ""
             
-            self?.userLocation = "\(number) \(street), \(city) \(state)" .trimmingCharacters(in: .whitespaces)
+            self?.userLocation = "\(number) \(street), \(city) \(state)"
+                .trimmingCharacters(in: .whitespaces)
+            
             print("User Address: \(self?.userLocation ?? "No Address")")
         }
     }
+    
     
     private func loadDummyAnnotation(){
         annotations = [
@@ -94,7 +116,9 @@ class MapViewModel : ObservableObject {
             RideAnnotation(title: "Racket Club Glide", vehicleDetails: .init(type: .standup, battery: 60, range: 18, perMinCost: 0.35, imageName: "scooter", coordinates: .init(latitude: 12.901575845120508, longitude: 77.60617609477084))),
             RideAnnotation(title: "Gopalan Mall Commuter", vehicleDetails: .init(type: .seated, battery: 80, range: 25, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 12.914576086432705, longitude: 77.59957933318957))),
             RideAnnotation(title: "Taco Street Explorer", vehicleDetails: .init(type: .offroad, battery: 40, range: 12, perMinCost: 0.45, imageName: "scooter", coordinates: .init(latitude: 12.91102638703737, longitude: 77.609690107531))),
-            RideAnnotation(title: "Uru Cruiser", vehicleDetails: .init(type: .seated, battery: 75, range: 22, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 37.333923550821474, longitude: -122.01485265580054)))
+            RideAnnotation(title: "Uru Cruiser", vehicleDetails: .init(type: .seated, battery: 75, range: 22, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 37.333923550821474, longitude: -122.01485265580054))),
+            RideAnnotation(title: "Jawed Habib", vehicleDetails: .init(type: .seated, battery: 75, range: 22, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 23.81173046464357, longitude: 86.43283136607822)))
+            
             
         ]
     }
