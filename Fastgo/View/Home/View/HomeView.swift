@@ -38,7 +38,7 @@ struct HomeView: View {
                     LocationButton(viewModel: mapViewModel)
                     
                     Button(action:{
-                       
+                        router.navigate(to: .scanQRCode)
                     }){
                         HStack(spacing: 8) {
                             Image(systemName: "qrcode.viewfinder")
@@ -65,6 +65,8 @@ struct HomeView: View {
             .navigationDestination(for: HomeRoutes.self){ route in
                 switch route {
                 case .profile: ProfileView()
+                case .scanQRCode : QRCodeScanView()
+                case .rideNavigation: RideNavigationView()
                 case .profileOptions(let option):
                     switch option {
                     case .myAccount:
@@ -88,8 +90,6 @@ struct HomeView: View {
                 .fixedSize(horizontal: false, vertical: true)
                             .modifier(GetHeightModifier(height: $sheetHeight))
                             .presentationDetents([.height(sheetHeight)])
-//            .presentationDetents([.fraction(0.5)])
-//                .environmentObject(mapViewModel)
         }
         .environmentObject(router)
     }

@@ -9,14 +9,16 @@ import SwiftUI
 
 struct CustomToolBarBackButton: View {
     @EnvironmentObject private var router : HomeRouter
+    var foregroundColor : Color = .black
+    var backgroundColor : Color = .white
     var body: some View {
         Button {
             router.navigatePop()
         } label: {
             Image(systemName: "chevron.left")
-                .foregroundStyle(.black)
+                .foregroundStyle(Color(foregroundColor))
                 .padding(13)
-                .background(.white, in: .circle)
+                .background(Color(backgroundColor), in: .circle)
                 .shadow(color: .black.opacity(0.1),radius:10,x:10,y:5)
         }
     }
