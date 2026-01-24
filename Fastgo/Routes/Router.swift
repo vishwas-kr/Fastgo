@@ -18,6 +18,8 @@ enum ProfileOptionRoutes : Hashable {
 enum HomeRoutes : Hashable {
     case profile
     case profileOptions(ProfileOptionRoutes)
+    case scanQRCode
+    case rideNavigation
 }
 
 final class HomeRouter : ObservableObject {
