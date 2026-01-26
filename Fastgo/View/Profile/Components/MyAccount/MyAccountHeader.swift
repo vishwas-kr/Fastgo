@@ -11,7 +11,7 @@ struct MyAccountHeader : View{
     @Binding var isShowingPhotoPicker : Bool
     var body : some View {
         HStack(spacing: 12){
-            AvatarView(cachedImage: viewModel.profileImage, imageUrl: viewModel.profileImageUrl, gender: viewModel.draft.gender)
+            MyAccountAvatar(cachedImage: viewModel.profileImage, imageUrl: viewModel.profileImageUrl, gender: viewModel.draft.gender)
             VStack(alignment:.leading) {
                 Text(viewModel.draft.name)
                     .font(.title3)

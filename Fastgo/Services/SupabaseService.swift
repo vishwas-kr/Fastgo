@@ -52,7 +52,7 @@ struct SupabaseService {
     
     func uploadProfileImage(userId: String, imageData: Data) async throws -> String {
         let path = "\(userId)/avatar.jpg"
-        let fullPath = try await client.storage.from("avatars").upload(path, data: imageData).path
+        let fullPath = try await client.storage.from("avatars").upload(path, data: imageData, options: FileOptions(contentType: "image/jpeg",upsert: true)).path
         print("Full Path: \(fullPath)")
         let publicURL = "\(APIConstants.project_URL)/storage/v1/object/public/avatars/\(path)"
         return publicURL
@@ -61,36 +61,6 @@ struct SupabaseService {
     func signOut() async throws {
         try await client.auth.signOut()
     }
-    
-//    func createUser(with id:String,phone:String) async throws {
-//        let user = BasicUser (
-//            id: id,
-//            name: "",
-//            phone: phone,
-//            gender: "",
-//            totalRides: 0,
-//            totalDistance: 0,
-//            profileImageUrl: "",
-//            dateOfBirth: nil,
-//            userStatus: UserStatus(basicInfoCompleted: false)
-//        )
-//    }
-//    
-//    func addBasicInfoDetails(with id : String, name: String, dob: String, gender: String , status: UserStatus) async throws {
-//        let user = BasicUser(
-//            id: id,
-//            name: name,
-//            phone: "",
-//            gender: gender,
-//            totalRides: 0,
-//            totalDistance: 0,
-//            profileImageUrl: "",
-//            dateOfBirth: <#T##Date?#>
-//            userStatus: status
-//        )
-//        
-//        try await client.from("users").insert(user).execute()
-//    }
 }
 
 

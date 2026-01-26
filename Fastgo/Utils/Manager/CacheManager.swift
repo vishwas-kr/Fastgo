@@ -8,6 +8,8 @@ final class CacheManager {
     private let memoryCache = NSCache<NSString, UIImage>()
     private let fileManager = FileManager.default
     
+    private let userProfileKey = "cachedUserProfile"
+    
     private init() {
         memoryCache.countLimit = 50
     }
@@ -44,8 +46,27 @@ final class CacheManager {
     func removeAll() {
         memoryCache.removeAllObjects()
         clearDiskCache()
+        UserDefaults.standard.removeObject(forKey: userProfileKey)
     }
     
+    func saveUserProfile(_ profile: UserProfile) {
+        if let encoded = try? JSONEncoder().encode(profile) {
+            UserDefaults.standard.set(encoded, forKey: userProfileKey)
+            print("✅ User profile cached")
+        }
+    }
+    
+    func getCachedUserProfile() -> UserProfile? {
+        guard let data = UserDefaults.standard.data(forKey: userProfileKey),
+              let profile = try? JSONDecoder().decode(UserProfile.self, from: data) else {
+            return nil
+        }
+        return profile
+    }
+    
+    func removeCachedUserProfile() {
+        UserDefaults.standard.removeObject(forKey: userProfileKey)
+    }
     
     private func diskURL(for key: NSString) -> URL {
         fileManager
@@ -73,4 +94,3 @@ final class CacheManager {
         try? fileManager.removeItem(at: cacheDir)
     }
 }
-

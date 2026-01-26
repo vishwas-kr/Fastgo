@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import PhotosUI
+
 @MainActor
 class MyAccountViewModel : ObservableObject {
     @Published var draft: UserProfileDraft
@@ -14,8 +15,8 @@ class MyAccountViewModel : ObservableObject {
     @Published var errorMessage : String?
     @Published var showError: Bool = false
     
-    @Published  var selectedItem: PhotosPickerItem? = nil
-    @Published  var profileImage : Image?
+    @Published var selectedItem: PhotosPickerItem? = nil
+    @Published var profileImage : Image?
     
     private var originalDraft: UserProfileDraft
     
@@ -36,7 +37,7 @@ class MyAccountViewModel : ObservableObject {
     
     var userId : String?
     
-    init(){
+    init() {
         let user = AppStateManager.shared.currentUser
         self.userId = user?.id
         self.profileImageUrl = user?.profileImageUrl
@@ -59,26 +60,38 @@ class MyAccountViewModel : ObservableObject {
     }
     
     func saveUserData() async {
-        guard let userId else {return}
+        guard let userId else { return }
         isLoading = true
         errorMessage = nil
         showError = false
         
-        
         do {
-            if selectedItem != nil { await uploadSelectedPhoto() }
+            // Upload image first if changed
+            if selectedItem != nil {
+                await uploadSelectedPhoto()
+            }
             
+            // Update profile data if changed
             if isProfileDataChanged {
                 let updatedData = UpdateUserProfile(
                     name: draft.name,
                     aboutMe: draft.aboutMe,
-                    gender: draft.gender.rawValue,
+                    gender: draft.gender.rawValue
                 )
                 
                 try await UserService.shared.updateUserProfile(userId: userId, payload: updatedData)
             }
             
-            await refreshLocalUser()
+            // Refresh user data in AppStateManager - this will auto-cache
+            await AppStateManager.shared.refreshUserProfile()
+            
+            // Update local state to reflect saved changes
+            originalDraft = draft
+            selectedItem = nil
+            
+            // Update profileImageUrl from refreshed user
+            profileImageUrl = AppStateManager.shared.currentUser?.profileImageUrl
+            
             print("Successfully Updated User Profile")
         } catch {
             print("Error Updating User Profile : \(error.localizedDescription)")
@@ -86,15 +99,6 @@ class MyAccountViewModel : ObservableObject {
             showError = true
         }
         isLoading = false
-    }
-    
-    private func refreshLocalUser() async {
-        do {
-            let user = try await UserService.shared.getUser(userId: userId!)
-            AppStateManager.shared.currentUser = user
-        } catch {
-            print("Failed to refresh user:", error)
-        }
     }
     
     func loadSelectedPhotoPreview() async {
@@ -106,62 +110,72 @@ class MyAccountViewModel : ObservableObject {
                 return
             }
             
+            // Update the preview image
             profileImage = Image(uiImage: uiImage)
         } catch {
             print("Failed to load photo preview:", error.localizedDescription)
         }
     }
     
-    
     func uploadSelectedPhoto() async {
         guard let item = selectedItem else { return }
         guard let userId else { return }
-        isLoading = true
-        errorMessage = nil
-        showError = false
+        
         do {
             guard let data = try await item.loadTransferable(type: Data.self),
                   let uiImage = UIImage(data: data),
                   let imageData = uiImage.jpegData(compressionQuality: 0.5) else {
                 errorMessage = "Could not load image data."
                 showError = true
-                isLoading = false
                 return
             }
             
-            profileImage = Image(uiImage:uiImage)
+            // Keep the preview updated
+            profileImage = Image(uiImage: uiImage)
             
-            
+            // Upload to storage
             let uploadedImageUrl = try await SupabaseService.shared.uploadProfileImage(userId: userId, imageData: imageData)
+            
+            // Update the URL in database
             await updateProfileImageUrl(uploadedImageUrl)
-            CacheManager.shared.save(image: uiImage,forKey: "cachedProfileImage")
-            print("Profile image updated successfully")
+            
+            // Cache the new image - this is critical!
+            CacheManager.shared.save(image: uiImage, forKey: "cachedProfileImage")
+            
+            print("Profile image uploaded and cached successfully")
         } catch {
             print("Failed to upload photo:", error.localizedDescription)
             errorMessage = "Failed to upload photo: \(error.localizedDescription)"
             showError = true
         }
-        
-        isLoading = false
     }
     
-    private func updateProfileImageUrl(_ imageUrl: String)async{
-        guard let userId else {return}
+    private func updateProfileImageUrl(_ imageUrl: String) async {
+        guard let userId else { return }
+        
         do {
             try await UserService.shared.updateProfileImageUrl(userId: userId, imageUrl)
-            AppStateManager.shared.currentUser?.profileImageUrl = imageUrl
+            
+            // Update AppStateManager - this will auto-cache
+            if var user = AppStateManager.shared.currentUser {
+                user.profileImageUrl = imageUrl
+                AppStateManager.shared.currentUser = user
+            }
+            
+            // Update local reference
+            profileImageUrl = imageUrl
         } catch {
-            print("Failed to upadte the user profile image url: \(error.localizedDescription)")
+            print("Failed to update the user profile image url: \(error.localizedDescription)")
         }
     }
     
-    func checkCachedProfileImage(){
-        guard let cachedImage = CacheManager.shared.image(forKey: "cachedProfileImage") else { return }
-        profileImage = Image(uiImage: cachedImage)
-        print("Image from Cache")
+    func checkCachedProfileImage() {
+        // Load cached image for preview
+        if let cachedImage = CacheManager.shared.image(forKey: "cachedProfileImage") {
+            profileImage = Image(uiImage: cachedImage)
+            print("Image loaded from cache")
+        }
     }
-    
-    
 }
 
 struct UserProfileDraft {

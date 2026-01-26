@@ -1,5 +1,5 @@
 //
-//  AuthManager.swift
+//  AppStateManager.swift
 //  Fastgo
 //
 //  Created by vishwas on 1/5/26.
@@ -7,6 +7,7 @@
 
 import Foundation
 import Supabase
+import SwiftUI
 
 @MainActor
 class AppStateManager : ObservableObject {
@@ -23,19 +24,31 @@ class AppStateManager : ObservableObject {
     @Published var userPhoneNumber : String?
     @Published var userID : String?
     
-    @Published var currentUser : UserProfile?
-    
+    @Published var currentUser : UserProfile? {
+        didSet {
+            // Auto-cache whenever currentUser changes
+            if let user = currentUser {
+                CacheManager.shared.saveUserProfile(user)
+                
+                // Also cache profile image if URL exists and not already cached
+                if let imageUrl = user.profileImageUrl,
+                   CacheManager.shared.image(forKey: "cachedProfileImage") == nil {
+                    Task {
+                        await downloadAndCacheProfileImage(from: imageUrl)
+                    }
+                }
+            }
+        }
+    }
     
     private init() {
         self.hasSeenOnboarding = UserDefaults.standard.bool(forKey: "hasOnboardingSeen")
     }
     
-    
     func initializeApp() async {
         print("Initializing App State 🚀")
         await checkExistingSession()
         updateFlow()
-        
         checkAppStatus()
     }
     
@@ -54,13 +67,13 @@ class AppStateManager : ObservableObject {
         await fetchOrCreateUser(userId:userId,phoneNumber:phoneNumber)
         
         updateFlow()
-        print("User AUthenticated ✅")
+        print("User Authenticated ✅")
     }
     
     func completeBasicInfo() {
         hasCompletedProfile = true
         updateFlow()
-        print("Baisc Info is Completed ✅")
+        print("Basic Info is Completed ✅")
     }
     
     func signOut() async {
@@ -88,7 +101,6 @@ class AppStateManager : ObservableObject {
         userPhoneNumber = nil
         try? await supabaseService.signOut()
         UserDefaults.standard.removeObject(forKey: "hasOnboardingSeen")
-        // UserDefaults.standard.removeObject(forKey: hasCompletedProfileKey)
         
         updateFlow()
         print("🔄 App reset to initial state")
@@ -102,7 +114,17 @@ class AppStateManager : ObservableObject {
                 isAuthenticated = true
                 userID = session.user.id.uuidString
                 userPhoneNumber = session.user.phone
+                
+                // Try to load from cache first
+                if let cachedUser = CacheManager.shared.getCachedUserProfile() {
+                    currentUser = cachedUser
+                    hasCompletedProfile = cachedUser.userStatus.basicInfoCompleted
+                    print("✅ Loaded user from cache")
+                }
+                
+                // Fetch fresh data in background
                 await fetchUserData(userID: session.user.id.uuidString)
+                
                 print("Found existing session for user: \(userID ?? "unknown")")
             } else {
                 isAuthenticated = false
@@ -131,6 +153,7 @@ class AppStateManager : ObservableObject {
             print("🔀 Flow changed: \(previousFlow) → \(currentFlow)")
         }
     }
+    
     func checkAppStatus() {
         print("""
                 
@@ -143,6 +166,21 @@ class AppStateManager : ObservableObject {
                 └─ Current Flow: \(currentFlow)
                 
                 """)
+    }
+    
+    /// Refresh user data from server and update cache
+    func refreshUserProfile() async {
+        guard let userID = userID else { return }
+        
+        do {
+            let user = try await UserService.shared.getUser(userId: userID)
+            if let user = user {
+                currentUser = user
+                print("✅ User profile refreshed from server")
+            }
+        } catch {
+            print("Error refreshing user profile: \(error)")
+        }
     }
     
     private func fetchOrCreateUser(userId: String, phoneNumber: String) async {
@@ -182,8 +220,21 @@ class AppStateManager : ObservableObject {
             hasCompletedProfile = false
         }
     }
+    
+    private func downloadAndCacheProfileImage(from urlString: String) async {
+        guard let url = URL(string: urlString) else { return }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            if let image = UIImage(data: data) {
+                CacheManager.shared.save(image: image, forKey: "cachedProfileImage")
+                print("✅ Profile image downloaded and cached")
+            }
+        } catch {
+            print("Failed to download profile image: \(error)")
+        }
+    }
 }
-
 
 enum AppFlow : Equatable {
     case loading

@@ -61,6 +61,13 @@ struct MyAccountView: View {
                 await viewModel.loadSelectedPhotoPreview()
             }
         }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            if let error = viewModel.errorMessage {
+                Text(error)
+            }
+        }
     }
 }
 

@@ -11,19 +11,7 @@ struct ProfileCard: View {
     var body: some View {
         VStack(alignment:.leading){
             HStack(spacing: 22){
-                Image("girl")
-                    .resizable()
-                    .frame(width:70,height:70)
-                    .overlay(
-                        Image(systemName: "pencil")
-                            .font(.headline)
-                            .padding(4)
-                            .foregroundStyle(.white)
-                            .background(.green)
-                            .clipShape(Circle())
-                        ,alignment: .bottomTrailing
-                    )
-                
+                AvatarView(showEditButton: true)
                 VStack(alignment:.leading) {
                     Text("\(userData?.name ?? "Fetching...")")
                         .font(.title3)

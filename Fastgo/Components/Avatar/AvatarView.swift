@@ -7,59 +7,103 @@
 import SwiftUI
 
 struct AvatarView: View {
-    let cachedImage: Image?
-    let imageUrl : String?
-    let gender : Gender
-    let showEditButton : Bool
-    let size : CGFloat
+    let size: CGFloat
+    let showEditButton: Bool
     
-    init(cachedImage: Image?, imageUrl: String?, gender: Gender, showEditButton: Bool = false, size: CGFloat = 70) {
-        self.cachedImage = cachedImage
-        self.imageUrl = imageUrl
-        self.gender = gender
-        self.showEditButton = showEditButton
-        self.size = size
+    @State private var cachedImage: UIImage?
+    @State private var isLoading = false
+    
+    private var user: UserProfile? {
+        AppStateManager.shared.currentUser
     }
     
     private var defaultAvatarName: String {
-        gender == .female ? "girl" : "boy"
+        (user?.gender == Gender.female.rawValue) ? "girl" : "boy"
     }
     
-    var body : some View {
-        Group{
+    init(size: CGFloat = 70, showEditButton: Bool = false) {
+        self.size = size
+        self.showEditButton = showEditButton
+    }
+    
+    var body: some View {
+        Group {
             if let cachedImage {
-                cachedImage
+                Image(uiImage: cachedImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width:size,height:size)
+                    .frame(width: size, height: size)
                     .clipShape(Circle())
-            } else if let imageUrl {
-                AsyncImage(url: URL(string: imageUrl)) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(width:size,height:size)
-                .clipShape(Circle())
-            } else {
-                Image(defaultAvatarName)
-                    .resizable()
-                    .frame(width:size,height:size)
-                    .overlay(alignment:.bottomTrailing){
-                        if showEditButton {
-                            Image(systemName: "pencil")
-                                .font(.headline)
-                                .padding(4)
-                                .foregroundStyle(.white)
-                                .background(.green)
-                                .clipShape(Circle())
-                        }
+            } else if let imageUrl = user?.profileImageUrl, !imageUrl.isEmpty {
+                AsyncImage(url: URL(string: imageUrl)) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(width: size, height: size)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: size, height: size)
+                            .clipShape(Circle())
+                            .onAppear {
+                                // Cache the downloaded image
+                                if let uiImage = extractUIImage(from: image) {
+                                    CacheManager.shared.save(image: uiImage, forKey: "cachedProfileImage")
+                                }
+                            }
+                    case .failure:
+                        defaultAvatar
+                    @unknown default:
+                        defaultAvatar
                     }
+                }
+            } else {
+                defaultAvatar
             }
         }
-        .padding(.trailing, 8)
+        .overlay(alignment: .bottomTrailing) {
+            if showEditButton {
+                Image(systemName: "pencil")
+                    .font(.headline)
+                    .padding(4)
+                    .foregroundStyle(.white)
+                    .background(.green)
+                    .clipShape(Circle())
+            }
+        }
+        .onAppear {
+            loadCachedImage()
+        }
+    }
+    
+    private var defaultAvatar: some View {
+        Image(defaultAvatarName)
+            .resizable()
+            .scaledToFill()
+            .frame(width: size, height: size)
+            .clipShape(Circle())
+    }
+    
+    private func loadCachedImage() {
+        if let cached = CacheManager.shared.image(forKey: "cachedProfileImage") {
+            cachedImage = cached
+            print("📸 Loaded avatar from cache")
+        }
+    }
+    
+    private func extractUIImage(from image: Image) -> UIImage? {
+        // This is a simple approach - for production you might want a more robust method
+        let controller = UIHostingController(rootView: image)
+        let view = controller.view
+        
+        let targetSize = CGSize(width: size, height: size)
+        view?.bounds = CGRect(origin: .zero, size: targetSize)
+        view?.backgroundColor = .clear
+        
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        return renderer.image { _ in
+            view?.drawHierarchy(in: view!.bounds, afterScreenUpdates: true)
+        }
     }
 }
-
