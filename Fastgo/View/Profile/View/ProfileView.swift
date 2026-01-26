@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @StateObject private var viewModel = ProfileViewModel()
     var body: some View {
         CustomBackgroundView(imageName: "obo1", imageHeightRatio: 0.35){
             VStack{
                 ScrollView(showsIndicators: false) {
-                    ProfileCard()
+                    ProfileCard(userData: $viewModel.currentUser)
                     ProfileOptionList()
                 }
                 .padding(.vertical)
@@ -29,6 +30,9 @@ struct ProfileView: View {
             ToolbarItem(placement: .topBarLeading){
                 CustomToolBarBackButton()
             }
+        }
+        .onAppear{
+            viewModel.getCurrentUser()
         }
     }
 }

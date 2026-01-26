@@ -29,14 +29,15 @@ struct UserBasicInfoUpdate: Codable {
     }
 }
 
-struct BasicUser : Identifiable, Codable {
+struct UserProfile : Identifiable, Codable {
     let id: String
     let name: String?
     let phone: String
     let gender: String?
+    let aboutMe: String?
     let totalRides : Int
     let totalDistance : Double
-    let profileImageUrl : String?
+    var profileImageUrl : String?
     let dateOfBirth : String?
     let userStatus: UserStatus
     
@@ -45,6 +46,7 @@ struct BasicUser : Identifiable, Codable {
         case name
         case phone
         case gender
+        case aboutMe = "about_me"
         case totalRides = "total_rides"
         case totalDistance = "total_distance"
         case profileImageUrl = "profile_image"
@@ -53,9 +55,22 @@ struct BasicUser : Identifiable, Codable {
     }
     
     var dateOfBirthAsDate: Date? {
-            guard let dateString = dateOfBirth else { return nil }
-            let formatter = ISO8601DateFormatter()
-            formatter.formatOptions = [.withFullDate]
-            return formatter.date(from: dateString)
-        }
+        guard let dateString = dateOfBirth else { return nil }
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withFullDate]
+        return formatter.date(from: dateString)
+    }
+}
+
+
+struct UpdateUserProfile : Codable {
+    let name : String
+    let aboutMe : String
+    let gender : String
+    
+    private enum CodingKeys : String, CodingKey {
+        case name
+        case aboutMe = "about_me"
+        case gender
+    }
 }

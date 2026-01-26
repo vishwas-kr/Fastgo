@@ -50,6 +50,14 @@ struct SupabaseService {
         return session
     }
     
+    func uploadProfileImage(userId: String, imageData: Data) async throws -> String {
+        let path = "\(userId)/avatar.jpg"
+        let fullPath = try await client.storage.from("avatars").upload(path, data: imageData).path
+        print("Full Path: \(fullPath)")
+        let publicURL = "\(APIConstants.project_URL)/storage/v1/object/public/avatars/\(path)"
+        return publicURL
+    }
+    
     func signOut() async throws {
         try await client.auth.signOut()
     }

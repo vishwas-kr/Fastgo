@@ -21,20 +21,21 @@ class UserService {
     }
     
     
-    func createUser(userId: String, phoneNumber: String) async throws -> BasicUser {
-        let basicUser = BasicUser(
+    func createUser(userId: String, phoneNumber: String) async throws -> UserProfile {
+        let basicUser = UserProfile(
             id: userId,
             name: nil,
             phone: phoneNumber,
             gender: nil,
+            aboutMe: nil,
             totalRides: 0,
             totalDistance: 0.0,
-            profileImageUrl: "",
+            profileImageUrl: nil,
             dateOfBirth: nil,
             userStatus: UserStatus(basicInfoCompleted: false)
         )
         
-        let response : [BasicUser] = try await client.from("users").insert(basicUser).select().execute().value
+        let response : [UserProfile] = try await client.from("users").insert(basicUser).select().execute().value
         guard let user = response.first else {
             throw UserServiceError.userCreationFailed
         }
@@ -44,9 +45,9 @@ class UserService {
         
     }
     
-    func getUser(userId: String) async throws -> BasicUser? {
+    func getUser(userId: String) async throws -> UserProfile? {
         do {
-            let response : [BasicUser] = try await client.from("users").select().eq("id", value: userId).execute().value
+            let response : [UserProfile] = try await client.from("users").select().eq("id", value: userId).execute().value
             
             print("User Fetched: \(response)")
             return response.first
@@ -60,7 +61,7 @@ class UserService {
     }
     
     
-    func updateBasicInfo(userId: String, name: String, dateOfBirth: String, gender: String) async throws -> BasicUser {
+    func updateBasicInfo(userId: String, name: String, dateOfBirth: String, gender: String) async throws -> UserProfile {
         let update = UserBasicInfoUpdate(
             name: name,
             gender: gender,
@@ -68,15 +69,17 @@ class UserService {
             userStatus: UserStatus(basicInfoCompleted: true)
         )
         
-        let response: [BasicUser] = try await client
+        let response: [UserProfile] = try await client
             .from("users")
             .update(update)
             .eq("id", value: userId)
-            .select()  // ← Also needed here!
+            .select()
             .execute()
             .value
         
         guard let user = response.first else {
+            //throw UserServiceError.updateFailed
+             print("Error:\(response)")
             throw UserServiceError.updateFailed
         }
         
@@ -93,12 +96,12 @@ class UserService {
     }
     
     
-    func updateProfileImage(userId:String, imageUrl: String) async throws {
-        let update = ["profile_image": imageUrl]
-        
-        try await client.from("users").update(update).eq("id", value: userId).execute()
-        
-        print("Profile pic updated")
+    func updateUserProfile(userId: String, payload : UpdateUserProfile) async throws{
+        try await client.from("users").update(payload).eq("id",value: userId).select().execute()
+    }
+    
+    func updateProfileImageUrl(userId:String,_ imageUrl:String) async throws {
+        try await client.from("users").update(["profile_image": imageUrl]).eq("id", value: userId).execute()
     }
 }
 

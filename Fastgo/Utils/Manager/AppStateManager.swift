@@ -23,7 +23,7 @@ class AppStateManager : ObservableObject {
     @Published var userPhoneNumber : String?
     @Published var userID : String?
     
-    @Published var currentUser : BasicUser?
+    @Published var currentUser : UserProfile?
     
     
     private init() {
@@ -71,7 +71,7 @@ class AppStateManager : ObservableObject {
             userPhoneNumber = nil
             currentUser = nil
             
-            //  UserDefaults.standard.removeObject(forKey: hasCompletedProfileKey)
+            CacheManager.shared.removeAll()
             updateFlow()
             print("User signed out")
             
