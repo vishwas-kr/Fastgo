@@ -8,4 +8,5 @@ import SwiftUI
 
 @Observable
 class HomeViewModel : ObservableObject {
+    
 }

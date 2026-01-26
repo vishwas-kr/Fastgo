@@ -7,37 +7,26 @@
 import SwiftUI
 
 struct ProfileCard: View {
+    @Binding var userData : UserProfile?
     var body: some View {
         VStack(alignment:.leading){
             HStack(spacing: 22){
-                Image("girl")
-                    .resizable()
-                    .frame(width:70,height:70)
-                    .overlay(
-                        Image(systemName: "pencil")
-                            .font(.headline)
-                            .padding(4)
-                            .foregroundStyle(.white)
-                            .background(.green)
-                            .clipShape(Circle())
-                        ,alignment: .bottomTrailing
-                    )
-                
+                AvatarView(showEditButton: true)
                 VStack(alignment:.leading) {
-                    Text("Dani Alves")
+                    Text("\(userData?.name ?? "Fetching...")")
                         .font(.title3)
                         .foregroundStyle(.black)
                         .fontWeight(.semibold)
-                    Text("User id: Dani@487")
+                    Text("User id: \(userData?.name ?? "@fastago")")
                         .font(.subheadline)
                         .foregroundStyle(.gray)
                 }
             }
             .padding(.bottom,22)
             HStack {
-                RideInfoBox(title: "Kilometers", image: "girl", value: "134.2 km")
+                RideInfoBox(title: "Kilometers", image: "girl", value: "\(userData?.totalDistance ?? 0.0) km")
                 Spacer()
-                RideInfoBox(title: "Total Rides", image: "boy", value: "43")
+                RideInfoBox(title: "Total Rides", image: "boy", value: "\(userData?.totalRides ?? 0)")
             }
             .padding()
             .background(RoundedRectangle(cornerRadius: 18).fill(.green.opacity(0.1)))

@@ -8,27 +8,31 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @StateObject private var viewModel = ProfileViewModel()
     var body: some View {
-        CustomBackgroundView(imageName: "obo1", imageHeightRatio: 0.35){
-            VStack{
+        CustomBackgroundView(imageName: "obo1", imageHeightRatio: 0.35) {
+            VStack {
                 ScrollView(showsIndicators: false) {
-                    ProfileCard()
+                    ProfileCard(userData: $viewModel.currentUser)
                     ProfileOptionList()
                 }
                 .padding(.vertical)
                 
                 CustomGreenButton(action: {
-                    Task{ await AppStateManager.shared.signOut()}
+                    Task { await AppStateManager.shared.signOut() }
                 }, title: "Logout")
             }
             .padding()
         }
         .navigationBarBackButtonHidden(true)
         .background(Color(.systemGray6))
-        .toolbar{
-            ToolbarItem(placement: .topBarLeading){
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
                 CustomToolBarBackButton()
             }
+        }
+        .onAppear {
+            viewModel.getCurrentUser()
         }
     }
 }
@@ -36,8 +40,3 @@ struct ProfileView: View {
 #Preview {
     ProfileView()
 }
-
-
-
-
-

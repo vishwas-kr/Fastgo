@@ -97,6 +97,7 @@ class BasicInfoViewModel : ObservableObject {
                 gender: gender.rawValue
             )
             print("User profile updated successfully for: \(updateData.name ?? "Unknown")")
+            AppStateManager.shared.currentUser = updateData
             isLoading = false
             navigateToSuccsees = true
             
