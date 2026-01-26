@@ -57,3 +57,11 @@ Based on the Fastgo Scooty design specifications, the app includes:
     </dict>
     </plist>
     ```
+
+ ### App Screenshots
+<p align="left">
+  <img src="screenshots/loading.png" height="300 style="margin-right:16px;" />
+  <img src="screenshots/login.png" height="300 style="margin-right:16px;" />
+  <img src="screenshots/home.png" height="300 style="margin-right:16px;" />
+  <img src="screenshots/scooterDetail.png" height="300 style="margin-right:16px;" />
+</p>
