@@ -18,6 +18,11 @@ struct OnboardingText: View {
             Text(page.description)
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
-        }.padding(.bottom, 32)
+        }
+        .padding(.bottom, 32)
+        .transition(.asymmetric(
+            insertion: .opacity.combined(with: .move(edge: .bottom)),
+            removal: .opacity.combined(with: .move(edge: .top))
+        ))
     }
 }

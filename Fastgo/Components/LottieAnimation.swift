@@ -9,9 +9,15 @@ import Lottie
 import SwiftUI
 
 struct LottieAnimation : View {
-    let animationName : String = "Loading"
-    let loopMode : LottieLoopMode = .loop
-    let onAnimationDidFinish : (() -> Void)? = nil
+    let animationName: String
+    let loopMode: LottieLoopMode
+    let onAnimationDidFinish: (() -> Void)?
+    init(animationName: String, loopMode: LottieLoopMode = .loop, onAnimationDidFinish: (() -> Void)? = nil){
+        self.animationName = animationName
+        self.loopMode = loopMode
+        self.onAnimationDidFinish = onAnimationDidFinish
+    }
+    
     var body : some View {
         LottieView(animation: .named(animationName))
             .configure{ config in
@@ -27,5 +33,5 @@ struct LottieAnimation : View {
 
 
 #Preview{
-    LottieAnimation()
+    LottieAnimation(animationName: "Loading")
 }

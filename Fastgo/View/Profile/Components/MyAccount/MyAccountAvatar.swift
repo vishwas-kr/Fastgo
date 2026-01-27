@@ -22,7 +22,7 @@ struct MyAccountAvatar: View {
     }
     
     private var defaultAvatarName: String {
-        gender == .female ? "girl" : "boy"
+        gender == .female ? AssetImage.Profile.avatarGirl : AssetImage.Profile.avatarBoy
     }
     
     var body : some View {

@@ -10,10 +10,13 @@ struct RideRowView: View {
     let ride : RideStatusModel
     var body: some View {
         HStack(spacing:18){
-            Image(systemName: "mappin.and.ellipse")
+            Image(AssetImage.Profile.rideHistoryDistanceIcon)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 30, height: 30)
+                .padding(8)
+                .frame(width: 45, height: 45)
+                .background(.purple.opacity(0.1))
+                .clipShape(Circle())
             
             VStack(alignment:.leading,spacing:8){
                 Text(ride.location)

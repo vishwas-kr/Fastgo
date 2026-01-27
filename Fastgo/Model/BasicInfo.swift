@@ -40,9 +40,9 @@ enum BasicInfo: Int, CaseIterable {
 extension Gender {
     var defaultAvatarName: String {
         switch self {
-        case .female: return "girl"
-        case .male: return "boy"
-        default: return "girl"
+        case .female: return AssetImage.Profile.avatarGirl
+        case .male: return AssetImage.Profile.avatarBoy
+        default: return AssetImage.Profile.avatarGirl
         }
     }
 }

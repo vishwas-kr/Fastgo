@@ -30,9 +30,9 @@ enum ScooterRideMenu : String, CaseIterable {
     var image : String {
         switch self {
         case .promo :
-            return "promo"
+            return AssetImage.Profile.promoCode
         case .payment :
-            return "pay"
+            return AssetImage.Profile.paymentMethod
         }
     }
     

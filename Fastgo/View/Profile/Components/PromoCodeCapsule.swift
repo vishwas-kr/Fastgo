@@ -8,10 +8,12 @@ import SwiftUI
 struct PromoCodeCapsule: View {
     var body: some View {
         HStack(spacing:22){
-            Image("girl")
+            Image(AssetImage.Profile.promoCode)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 60, height: 60)
+                .background(.purple.opacity(0.1))
+                .clipShape(Circle())
             VStack(alignment:.leading){
                 Text("5$ off one ride")
                     .font(.subheadline)

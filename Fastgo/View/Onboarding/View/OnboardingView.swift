@@ -22,8 +22,9 @@ struct OnboardingView : View {
     var body : some View {
         ZStack{
             VStack {
-                Image("on2")
+                Image(AssetImage.Onboarding.ride)
                     .resizable()
+                    .scaledToFill()
                     .frame(width:UIScreen.main.bounds.width, height:UIScreen.main.bounds.height * 0.65)
                     .ignoresSafeArea()
                 
@@ -52,7 +53,7 @@ struct OnboardingView : View {
                 Circle()
                     .fill(viewModel.currentPage == index ? Color.pink : Color(.systemGray4))
                     .frame(width: viewModel.currentPage == index ? 12 : 8)
-                    .animation(.spring(), value:viewModel.currentPage)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.currentPage)
             }
         }.padding()
     }
@@ -81,6 +82,7 @@ struct OnboardingView : View {
                 .clipShape(Capsule())
             
         }
+        .shadow(color: Color.black.opacity(0.15), radius: 6, x: 0, y: 4)
     }
 }
 

@@ -13,7 +13,7 @@ struct LoadingView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
-                LottieAnimation()
+                LottieAnimation(animationName: "ScooterAndBaloon")
                 Text("Loading...")
                     .font(.headline)
                     .fontWeight(.semibold)

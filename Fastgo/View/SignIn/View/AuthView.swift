@@ -16,10 +16,12 @@ struct AuthFlowView: View {
         NavigationStack{
             ZStack{
                 VStack {
-                    Image("login")
+                    Image(AssetImage.Auth.background)
                         .resizable()
+                        .scaledToFill()
                         .frame(width:UIScreen.main.bounds.width, height:UIScreen.main.bounds.height * 0.65)
                         .ignoresSafeArea()
+                    
                     
                     Spacer()
                 }
@@ -37,4 +39,9 @@ struct AuthFlowView: View {
             hideKeyboard()
         }
     }
+}
+
+
+#Preview{
+    AuthFlowView()
 }

@@ -10,10 +10,11 @@ import SwiftUI
 struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     var body: some View {
-        CustomBackgroundView(imageName: "obo1", imageHeightRatio: 0.35) {
+        CustomBackgroundView(imageName: AssetImage.Profile.profileBackground, imageHeightRatio: 0.35) {
             VStack {
                 ScrollView(showsIndicators: false) {
                     ProfileCard(userData: $viewModel.currentUser)
+                        .padding(.bottom)
                     ProfileOptionList()
                 }
                 .padding(.vertical)

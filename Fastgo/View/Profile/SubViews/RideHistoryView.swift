@@ -34,14 +34,13 @@ struct RideHistoryView: View {
         GeometryReader { geo in
             ZStack{
                 VStack {
-                    Image("rideHistory")
+                    Image(AssetImage.Profile.rideHistoryBackground)
                         .resizable()
                         .scaledToFill()
                         .frame(height: geo.size.height * 0.3)
                         .ignoresSafeArea(edges: .top)
                     Spacer()
                 }
-                
                 VStack(alignment: .leading){
                     VStack(alignment: .leading, spacing: 18){
                         Text("Ride History")
@@ -77,7 +76,6 @@ struct RideHistoryView: View {
                 
             }
             .navigationBarBackButtonHidden(true)
-            .background(.red)
             .toolbar{
                 ToolbarItem(placement: .topBarLeading){
                     CustomToolBarBackButton()

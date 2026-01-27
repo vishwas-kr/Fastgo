@@ -24,9 +24,9 @@ struct ProfileCard: View {
             }
             .padding(.bottom,22)
             HStack {
-                RideInfoBox(title: "Kilometers", image: "girl", value: "\(userData?.totalDistance ?? 0.0) km")
+                RideInfoBox(title: "Kilometers", image: AssetImage.Profile.kilometer, value: "\(userData?.totalDistance ?? 0.0) km")
                 Spacer()
-                RideInfoBox(title: "Total Rides", image: "boy", value: "\(userData?.totalRides ?? 0)")
+                RideInfoBox(title: "Total Rides", image: AssetImage.Profile.rides, value: "\(userData?.totalRides ?? 0)")
             }
             .padding()
             .background(RoundedRectangle(cornerRadius: 18).fill(.green.opacity(0.1)))

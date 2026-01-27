@@ -40,13 +40,13 @@ enum PromoVariant: Int, CaseIterable {
     var image : String {
         switch self {
         case .pass:
-            "pass"
+            AssetImage.Promo.pass
         case .bike:
-            "scooter"
+            AssetImage.Promo.bike
         case .offer:
-            "offer"
+            AssetImage.Promo.offer
         case .parking:
-            "scooter1"
+            AssetImage.Promo.powerScooter
         }
     }
     

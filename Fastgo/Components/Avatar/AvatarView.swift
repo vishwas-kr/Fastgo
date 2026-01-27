@@ -18,7 +18,7 @@ struct AvatarView: View {
     }
     
     private var defaultAvatarName: String {
-        (user?.gender == Gender.female.rawValue) ? "girl" : "boy"
+        (user?.gender == Gender.female.rawValue) ? AssetImage.Profile.avatarGirl : AssetImage.Profile.avatarBoy
     }
     
     init(size: CGFloat = 70, showEditButton: Bool = false) {
@@ -88,6 +88,7 @@ struct AvatarView: View {
     private func loadCachedImage() {
         if let cached = CacheManager.shared.image(forKey: "cachedProfileImage") {
             cachedImage = cached
+            print(cachedImage)
             print("📸 Loaded avatar from cache")
         }
     }

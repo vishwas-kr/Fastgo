@@ -4,7 +4,7 @@
 //
 //  Created by vishwas on 1/1/26.
 //
-import Foundation
+import SwiftUI
 
 class OnboardingViewModel : ObservableObject {
     
@@ -33,7 +33,9 @@ class OnboardingViewModel : ObservableObject {
         if isLastPage {
             completeOnboarding()
         } else {
-            currentPage += 1
+            withAnimation(.easeInOut(duration: 0.4)) {
+                currentPage += 1
+            }
         }
     }
     
