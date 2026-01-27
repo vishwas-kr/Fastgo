@@ -23,6 +23,7 @@ class AppStateManager : ObservableObject {
     
     @Published var userPhoneNumber : String?
     @Published var userID : String?
+    @Published var profileImage: UIImage?
     
     @Published var currentUser : UserProfile? {
         didSet {
@@ -30,9 +31,8 @@ class AppStateManager : ObservableObject {
             if let user = currentUser {
                 CacheManager.shared.saveUserProfile(user)
                 
-                // Also cache profile image if URL exists and not already cached
-                if let imageUrl = user.profileImageUrl,
-                   CacheManager.shared.image(forKey: "cachedProfileImage") == nil {
+                // Also download profile image if URL exists and we don't have it.
+                if let imageUrl = user.profileImageUrl, self.profileImage == nil {
                     Task {
                         await downloadAndCacheProfileImage(from: imageUrl)
                     }
@@ -83,6 +83,7 @@ class AppStateManager : ObservableObject {
             userID = nil
             userPhoneNumber = nil
             currentUser = nil
+            profileImage = nil
             
             CacheManager.shared.removeAll()
             updateFlow()
@@ -120,6 +121,12 @@ class AppStateManager : ObservableObject {
                     currentUser = cachedUser
                     hasCompletedProfile = cachedUser.userStatus.basicInfoCompleted
                     print("✅ Loaded user from cache")
+                }
+                
+                // Try to load image from cache if we don't have one
+                if profileImage == nil, let cachedImage = CacheManager.shared.image(forKey: "cachedProfileImage") {
+                    self.profileImage = cachedImage
+                    print("📸 Loaded avatar from cache on session check")
                 }
                 
                 // Fetch fresh data in background
@@ -228,6 +235,7 @@ class AppStateManager : ObservableObject {
             let (data, _) = try await URLSession.shared.data(from: url)
             if let image = UIImage(data: data) {
                 CacheManager.shared.save(image: image, forKey: "cachedProfileImage")
+                self.profileImage = image
                 print("✅ Profile image downloaded and cached")
             }
         } catch {

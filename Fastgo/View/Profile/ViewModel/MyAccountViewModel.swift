@@ -38,12 +38,9 @@ class MyAccountViewModel : ObservableObject {
     var userId : String?
     
     init() {
-        let user = AppStateManager.shared.currentUser
-        self.userId = user?.id
-        self.profileImageUrl = user?.profileImageUrl
-        let draft = Self.makeDraft(from: user)
-        self.draft = draft
-        self.originalDraft = draft
+        self.draft = .empty
+        self.originalDraft = .empty
+        resetStateFromUser(AppStateManager.shared.currentUser)
     }
     
     private static func makeDraft(from user: UserProfile?) -> UserProfileDraft {
@@ -85,12 +82,7 @@ class MyAccountViewModel : ObservableObject {
             // Refresh user data in AppStateManager - this will auto-cache
             await AppStateManager.shared.refreshUserProfile()
             
-            // Update local state to reflect saved changes
-            originalDraft = draft
-            selectedItem = nil
-            
-            // Update profileImageUrl from refreshed user
-            profileImageUrl = AppStateManager.shared.currentUser?.profileImageUrl
+            resetStateFromUser(AppStateManager.shared.currentUser)
             
             print("Successfully Updated User Profile")
         } catch {
@@ -141,6 +133,7 @@ class MyAccountViewModel : ObservableObject {
             
             // Cache the new image - this is critical!
             CacheManager.shared.save(image: uiImage, forKey: "cachedProfileImage")
+            AppStateManager.shared.profileImage = uiImage
             
             print("Profile image uploaded and cached successfully")
         } catch {
@@ -171,10 +164,20 @@ class MyAccountViewModel : ObservableObject {
     
     func checkCachedProfileImage() {
         // Load cached image for preview
-        if let cachedImage = CacheManager.shared.image(forKey: "cachedProfileImage") {
-            profileImage = Image(uiImage: cachedImage)
+        // This now gets the image directly from the AppStateManager
+        if profileImage == nil, let uiImage = AppStateManager.shared.profileImage {
+            profileImage = Image(uiImage: uiImage)
             print("Image loaded from cache")
         }
+    }
+    
+    private func resetStateFromUser(_ user: UserProfile?) {
+        self.userId = user?.id
+        self.profileImageUrl = user?.profileImageUrl
+        let newDraft = Self.makeDraft(from: user)
+        self.draft = newDraft
+        self.originalDraft = newDraft
+        self.selectedItem = nil
     }
 }
 

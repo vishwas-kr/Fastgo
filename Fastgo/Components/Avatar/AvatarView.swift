@@ -9,13 +9,7 @@ import SwiftUI
 struct AvatarView: View {
     let size: CGFloat
     let showEditButton: Bool
-    
-    @State private var cachedImage: UIImage?
-    @State private var isLoading = false
-    
-    private var user: UserProfile? {
-        AppStateManager.shared.currentUser
-    }
+    @StateObject private var appState = AppStateManager.shared
     
     private var defaultAvatarName: String {
         (user?.gender == Gender.female.rawValue) ? AssetImage.Profile.avatarGirl : AssetImage.Profile.avatarBoy
@@ -26,16 +20,20 @@ struct AvatarView: View {
         self.showEditButton = showEditButton
     }
     
+    private var user: UserProfile? {
+        appState.currentUser
+    }
+    
     var body: some View {
         Group {
-            if let cachedImage {
-                Image(uiImage: cachedImage)
+            if let profileImage = appState.profileImage {
+                Image(uiImage: profileImage)
                     .resizable()
                     .scaledToFill()
                     .frame(width: size, height: size)
                     .clipShape(Circle())
             } else if let imageUrl = user?.profileImageUrl, !imageUrl.isEmpty {
-                AsyncImage(url: URL(string: imageUrl)) { phase in
+                AsyncImage(url: URL(string: imageUrl), transaction: Transaction(animation: .easeIn)) { phase in
                     switch phase {
                     case .empty:
                         ProgressView()
@@ -46,12 +44,6 @@ struct AvatarView: View {
                             .scaledToFill()
                             .frame(width: size, height: size)
                             .clipShape(Circle())
-                            .onAppear {
-                                // Cache the downloaded image
-                                if let uiImage = extractUIImage(from: image) {
-                                    CacheManager.shared.save(image: uiImage, forKey: "cachedProfileImage")
-                                }
-                            }
                     case .failure:
                         defaultAvatar
                     @unknown default:
@@ -72,9 +64,6 @@ struct AvatarView: View {
                     .clipShape(Circle())
             }
         }
-        .onAppear {
-            loadCachedImage()
-        }
     }
     
     private var defaultAvatar: some View {
@@ -83,28 +72,5 @@ struct AvatarView: View {
             .scaledToFill()
             .frame(width: size, height: size)
             .clipShape(Circle())
-    }
-    
-    private func loadCachedImage() {
-        if let cached = CacheManager.shared.image(forKey: "cachedProfileImage") {
-            cachedImage = cached
-            print(cachedImage)
-            print("📸 Loaded avatar from cache")
-        }
-    }
-    
-    private func extractUIImage(from image: Image) -> UIImage? {
-        // This is a simple approach - for production you might want a more robust method
-        let controller = UIHostingController(rootView: image)
-        let view = controller.view
-        
-        let targetSize = CGSize(width: size, height: size)
-        view?.bounds = CGRect(origin: .zero, size: targetSize)
-        view?.backgroundColor = .clear
-        
-        let renderer = UIGraphicsImageRenderer(size: targetSize)
-        return renderer.image { _ in
-            view?.drawHierarchy(in: view!.bounds, afterScreenUpdates: true)
-        }
     }
 }
