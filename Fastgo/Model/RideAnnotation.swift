@@ -7,11 +7,11 @@
 import SwiftUI
 import MapKit
 
-// The new ScooterType enum as requested.
-// Making it Codable allows for easy conversion from/to JSON.
-enum ScooterType: String, Codable, CaseIterable {
-    case sports, offroad, seated, standup
-}
+//// The new ScooterType enum as requested.
+//// Making it Codable allows for easy conversion from/to JSON.
+//enum ScooterType: String, Codable, CaseIterable {
+//    case sports, offroad, seated, standup
+//}
 
 // This struct groups all vehicle-specific details as you requested.
 struct VehicleDetails: Equatable {

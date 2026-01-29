@@ -8,28 +8,8 @@
 import SwiftUI
 
 struct RideHistoryView: View {
-    @State var selectedTab : Int = 0
-    @Namespace private var underlineNamespace
-    let tabs : [String] = ["All", "Completed", "Upcoming", "Canceled"]
-    let rides : [RideStatusModel] = [
-        RideStatusModel(location: "Westheimer Rd. Santa Cruse Bay", date: "Today, 12:38 PM", fare: -12.12,status : .upcoming),
-        RideStatusModel(location: "1901 Thornridge Circit road", date: "Yesterday, 10:45 AM", fare: -15.00, status : .completed)
-    ]
+    @StateObject private var viewModel = RideHistoryViewModel()
     
-    var filterRides : [RideStatusModel] {
-        switch selectedTab {
-            case 0:
-                return rides
-            case 1:
-                return rides.filter { $0.status == .completed }
-            case 2:
-                return rides.filter { $0.status == .upcoming }
-            case 3:
-                return rides.filter { $0.status == .cancelled }
-            default:
-                return rides
-            }
-    }
     var body: some View {
         GeometryReader { geo in
             ZStack{
@@ -42,29 +22,33 @@ struct RideHistoryView: View {
                     Spacer()
                 }
                 VStack(alignment: .leading){
-                    VStack(alignment: .leading, spacing: 18){
-                        Text("Ride History")
-                            .font(.title)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.black)
-                        
-                        Text("Here you'll find the list of all the rides you have valideted, and theri fares.")
-                            .font(.subheadline)
-                            .fontWeight(.light)
-                            .foregroundStyle(.black)
-                        
+                    
+                    header
+                    
+                    RideHistoryTabView(viewModel: viewModel)
+                    
+                    
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            
+                            if viewModel.isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .scaleEffect(1.2)
+                                    .padding(.top, 40)
+                            } else if viewModel.uiModels.isEmpty {
+                                Text("No rides found")
+                                    .foregroundColor(.gray)
+                                    .padding(.top, 40)
+                            } else {
+                                ForEach(viewModel.uiModels) { ride in
+                                    RideRowView(ride: ride)
+                                }
+                            }
+                        }.padding(.bottom,55)
+                        .padding()
                     }
-                    .padding(.horizontal)
-                    .padding(.bottom,22)
                     
-                    tabsView
-                    
-                    
-                    VStack {
-                        ForEach(filterRides){ride in
-                            RideRowView(ride: ride)
-                        }
-                    }.padding()
                     
                     Spacer()
                     
@@ -75,46 +59,39 @@ struct RideHistoryView: View {
                 .offset(y: geo.size.height * 0.18)
                 
             }
+            .task {
+                await viewModel.loadRides()
+            }
             .navigationBarBackButtonHidden(true)
             .toolbar{
                 ToolbarItem(placement: .topBarLeading){
                     CustomToolBarBackButton()
                 }
             }
+            .onChange(of: viewModel.selectedTab) {
+                withAnimation(.easeInOut) {}
+            }
         }
     }
     
-    private var tabsView : some View {
-        ScrollView(.horizontal,showsIndicators: false){
-            HStack (spacing:0) {
-                ForEach(tabs.indices, id:\.self) {index in
-                    
-                    VStack{
-                        Text(tabs[index])
-                            .fontWeight(selectedTab == index ? .bold : .regular)
-                            .padding(.horizontal,22)
-                            .onTapGesture {
-                                selectedTab = index
-                            }
-                        if selectedTab == index {
-                            Rectangle()
-                                .frame(height:2)
-                                .foregroundStyle(.green)
-                                .matchedGeometryEffect(id: "underline", in: underlineNamespace)
-                        } else {
-                            Rectangle()
-                                .frame(height:0.5)
-                                .foregroundStyle(Color(.systemGray3))
-                        }
-                        
-                    }
-                }
-            }
+    private var header : some View {
+        VStack(alignment: .leading, spacing: 18){
+            Text("Ride History")
+                .font(.title)
+                .fontWeight(.semibold)
+                .foregroundStyle(.black)
+            
+            Text("Here you'll find the list of all the rides you have valideted, and theri fares.")
+                .font(.subheadline)
+                .fontWeight(.light)
+                .foregroundStyle(.black)
+            
         }
+        .padding(.horizontal)
+        .padding(.bottom,22)
     }
 }
 
 #Preview {
     RideHistoryView()
 }
-
