@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct ScooterDetail: View {
-    let annotation: RideAnnotation
+    let annotation: ScooterAnnotation
     
     var body: some View {
         HStack(alignment:.top){
@@ -15,7 +15,7 @@ struct ScooterDetail: View {
                 .fill(.cyan.opacity(0.5))
                 .frame(maxWidth: 180, maxHeight: 180)
                 .overlay(
-                    Image(annotation.image)
+                    Image(annotation.scooter.imageName)
                         .resizable()
                         .scaledToFit()
                         .offset(x:0,y:-20)
@@ -23,12 +23,12 @@ struct ScooterDetail: View {
                 )
                 .padding(.trailing,8)
             VStack(alignment:.leading,spacing: 3){
-                Text(annotation.typeName)
+                Text(annotation.scooter.typeName)
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.orange)
                 
-                Text(annotation.title)
+                Text(annotation.scooter.uniqueCode)
                     .font(.title)
                     .fontWeight(.semibold)
                     .lineLimit(1)
@@ -38,13 +38,13 @@ struct ScooterDetail: View {
                     Image(systemName: "bolt.circle")
                         .font(.title2)
                         .foregroundStyle(.green)
-                    Text("\(annotation.battery)%")
+                    Text("\(annotation.scooter.battery)%")
                         .font(.callout)
                         .fontWeight(.semibold)
                     Divider()
                         .background(.white)
                         .frame(height: 20)
-                    Text("~\(annotation.range) km")
+                    Text("~\(annotation.scooter.rangeKm) km")
                         .font(.callout)
                         .fontWeight(.semibold)
                 }
@@ -62,7 +62,7 @@ struct ScooterDetail: View {
                     .background(.green.opacity(0.2))
                     .clipShape(RoundedCorners(radius:5, corners: .allCorners))
                 
-                Text(String(format: "$%.2f/min + tax", annotation.perMinCost))
+                Text(String(format: "$%.2f/min + tax", annotation.scooter.perMinCost))
                     .font(.footnote)
                     .fontWeight(.semibold)
                     .padding(8)

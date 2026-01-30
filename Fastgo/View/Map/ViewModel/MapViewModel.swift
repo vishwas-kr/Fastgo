@@ -17,18 +17,18 @@ class MapViewModel : ObservableObject {
     
     @Published var cameraPosition : MapCameraPosition = .automatic
     @Published var userLocation : String = ""
-    @Published var annotations : [RideAnnotation] = []
-    @Published var selectedAnnotation : RideAnnotation?
+    @Published var annotations : [ScooterAnnotation] = []
+    @Published var selectedAnnotation : ScooterAnnotation?
     @Published var routePolyline : MKRoute?
     
     private var hasCenteredOnce = false
     private var lastGeocodedLocation: CLLocation?
+    private var scooterServices = ScooterServices.shared
     
     
     init (){
         bindLocation()
         bindAuthoriazationStatus()
-        loadDummyAnnotation()
     }
     
     private func bindLocation() {
@@ -107,23 +107,20 @@ class MapViewModel : ObservableObject {
     }
     
     
-    private func loadDummyAnnotation(){
-        annotations = [
-            RideAnnotation(title: "Uru Cruiser", vehicleDetails: .init(type: .seated, battery: 75, range: 22, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 12.906070487006321, longitude: 77.60124826674085))),
-            RideAnnotation(title: "IIM Speedster", vehicleDetails: .init(type: .standup, battery: 50, range: 15, perMinCost: 0.35, imageName: "scooter", coordinates: .init(latitude: 12.894691319865407, longitude: 77.60125412506517))),
-            RideAnnotation(title: "Bhramas Brew Beast", vehicleDetails: .init(type: .offroad, battery: 90, range: 30, perMinCost: 0.45, imageName: "scooter", coordinates: .init(latitude: 12.893905832352848, longitude: 77.58642198094265))),
-            RideAnnotation(title: "Silk Board Racer", vehicleDetails: .init(type: .sports, battery: 95, range: 32, perMinCost: 0.49, imageName: "scooter", coordinates: .init(latitude: 12.91678053449925, longitude: 77.62335050972374))),
-            RideAnnotation(title: "Racket Club Glide", vehicleDetails: .init(type: .standup, battery: 60, range: 18, perMinCost: 0.35, imageName: "scooter", coordinates: .init(latitude: 12.901575845120508, longitude: 77.60617609477084))),
-            RideAnnotation(title: "Gopalan Mall Commuter", vehicleDetails: .init(type: .seated, battery: 80, range: 25, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 12.914576086432705, longitude: 77.59957933318957))),
-            RideAnnotation(title: "Taco Street Explorer", vehicleDetails: .init(type: .offroad, battery: 40, range: 12, perMinCost: 0.45, imageName: "scooter", coordinates: .init(latitude: 12.91102638703737, longitude: 77.609690107531))),
-            RideAnnotation(title: "Uru Cruiser", vehicleDetails: .init(type: .seated, battery: 75, range: 22, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 37.333923550821474, longitude: -122.01485265580054))),
-            RideAnnotation(title: "Jawed Habib", vehicleDetails: .init(type: .seated, battery: 75, range: 22, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 23.81173046464357, longitude: 86.43283136607822)))
+    func getNearByScooters() async {
+        do {
+            let scooterDTOs = try await scooterServices.fetchScooters()
             
-            
-        ]
+            annotations = scooterDTOs.map { dto in
+                let scooter = Scooter(from: dto)
+                return ScooterAnnotation(id: scooter.id, coordinate: scooter.coordinate, scooter: scooter)
+            }
+        } catch {
+            print("Error fetching Scooters: \(error)")
+        }
     }
     
-    func selectAnnotation(annotation : RideAnnotation) {
+    func selectAnnotation(annotation : ScooterAnnotation) {
         selectedAnnotation = annotation
     }
     

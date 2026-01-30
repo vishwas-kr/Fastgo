@@ -34,7 +34,7 @@ class RideHistoryViewModel : ObservableObject {
     var filterRides : [Ride] {
         switch selectedTab {
         case 1: return rides.filter{$0.status == .completed}
-        case 2: return rides.filter{$0.status == .upcoming}
+        case 2: return rides.filter{$0.status == .reserved}
         case 3: return rides.filter{$0.status == .cancelled}
         default : return rides
         }
@@ -42,7 +42,7 @@ class RideHistoryViewModel : ObservableObject {
     
     var uiModels : [RideStatusModel] {
         filterRides.map{
-            RideStatusModel(location: $0.startLocationName, date: Date.rideDateFormatter($0.rideDate), fare: $0.fareAmount, status: $0.status)
+            RideStatusModel(location: $0.endLocationName ?? $0.startLocationName ?? "", date: Date.rideDateFormatter($0.startedAt ?? Date()), fare: $0.totalFare, status: $0.status)
         }
     }
 
