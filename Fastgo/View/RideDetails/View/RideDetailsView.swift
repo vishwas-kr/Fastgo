@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RideDetailsView: View {
-    let annotation: RideAnnotation
+    let annotation: ScooterAnnotation
     @StateObject var mapViewModel: MapViewModel
     
     var body: some View {
@@ -31,5 +31,17 @@ struct RideDetailsView: View {
 
 
  #Preview {
-     RideDetailsView(annotation:  RideAnnotation(title: "Uru Cruiser", vehicleDetails: .init(type: .seated, battery: 75, range: 22, perMinCost: 0.39, imageName: "scooter", coordinates: .init(latitude: 37.333923550821474, longitude: -122.01485265580054))), mapViewModel: MapViewModel())
+    let scooter = Scooter(
+        id: "preview_scooter",
+        uniqueCode: "Uru Cruiser",
+        type: .offroad,
+        battery: 75,
+        rangeKm: 22,
+        perMinCost: 0.39,
+        coordinate: .init(latitude: 37.333923550821474, longitude: -122.007465),
+        status: .available
+    )
+    let annotation = ScooterAnnotation(id: scooter.id, coordinate: scooter.coordinate, scooter: scooter)
+     
+     RideDetailsView(annotation: annotation, mapViewModel: MapViewModel())
  }

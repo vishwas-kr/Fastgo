@@ -35,11 +35,14 @@ struct MapView: View {
         .onAppear {
             mapViewModel.requestPermission()
         }
+        .task{
+           await mapViewModel.getNearByScooters()
+        }
     }
 }
 
 //#Preview {
-//    MapView(viewModel: MapViewModel())
+//    MapView(mapViewModel: MapViewModel())
 //}
 
 struct CustomAnnotation: View {

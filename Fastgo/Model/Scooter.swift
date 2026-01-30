@@ -64,7 +64,6 @@ struct Scooter: Identifiable, Equatable {
     let battery: Int
     let rangeKm: Int
     let perMinCost: Double
-    let imageName: String
     
     let coordinate: CLLocationCoordinate2D
     let status: ScooterStatus
@@ -76,7 +75,6 @@ struct Scooter: Identifiable, Equatable {
         lhs.battery == rhs.battery &&
         lhs.rangeKm == rhs.rangeKm &&
         lhs.perMinCost == rhs.perMinCost &&
-        lhs.imageName == rhs.imageName &&
         lhs.status == rhs.status &&
         lhs.coordinate.latitude == rhs.coordinate.latitude &&
         lhs.coordinate.longitude == rhs.coordinate.longitude
@@ -94,3 +92,22 @@ struct Scooter: Identifiable, Equatable {
     }
 }
 
+extension Scooter {
+    init(from dto: ScooterDTO) {
+        self.id = dto.id
+        self.uniqueCode = dto.uniqueCode
+        self.type = dto.type
+        self.battery = dto.battery
+        self.rangeKm = dto.rangeKm
+        self.perMinCost = dto.perMinCost
+        self.coordinate = CLLocationCoordinate2D(latitude: dto.latitude, longitude: dto.longitude)
+        self.status = dto.status
+    }
+    
+    var imageName: String {
+        switch type {
+        case .offroad, .seated, .standup, .sports:
+            return AssetImage.Scooter.scooter
+        }
+    }
+}
