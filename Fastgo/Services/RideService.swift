@@ -20,7 +20,7 @@ class RideService {
     }
     
     func fetchRides(userId: String) async throws -> [Ride]{
-        try await client.from("rides").select().eq("id", value: userId).order("ride_date",ascending: false).execute().value
+        try await client.from("rides").select().eq("user_id", value: userId).order("created_at",ascending: false).execute().value
     }
     
     func createRide(userId: String, payload: Ride) async throws -> Ride {
