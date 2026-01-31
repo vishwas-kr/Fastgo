@@ -8,11 +8,27 @@
 import SwiftUI
 
 struct RideNavigationView: View {
+    @ObservedObject var mapViewModel : MapViewModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack(alignment: .bottom){
+            MapView(mapViewModel: mapViewModel)
+                .ignoresSafeArea(.all)
+            VStack{
+                LocationButton(viewModel: mapViewModel)
+                RideStateBottomCard(mapViewModel: mapViewModel)
+            }
+            .padding(22)
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar{
+            ToolbarItem(placement: .topBarLeading){
+                CustomToolBarBackButton()
+            }
+        }
+        .toolbarBackground(.hidden, for: .navigationBar)
     }
 }
 
 #Preview {
-    RideNavigationView()
+    RideNavigationView(mapViewModel: MapViewModel())
 }

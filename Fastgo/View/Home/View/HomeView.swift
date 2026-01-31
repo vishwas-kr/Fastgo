@@ -66,7 +66,7 @@ struct HomeView: View {
                 switch route {
                 case .profile: ProfileView()
                 case .scanQRCode : QRCodeScanView()
-                case .rideNavigation: RideNavigationView()
+                case .rideNavigation: RideNavigationView(mapViewModel: mapViewModel)
                 case .profileOptions(let option):
                     switch option {
                     case .myAccount:

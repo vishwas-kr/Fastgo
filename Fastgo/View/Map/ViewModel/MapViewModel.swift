@@ -9,6 +9,14 @@ import MapKit
 import _MapKit_SwiftUI
 import Combine
 
+enum MapMode {
+    case browse
+    case navigateToScooter
+    case riding
+    case navigateToParking
+}
+
+
 @MainActor
 class MapViewModel : ObservableObject {
     let locationManager = LocationManager()
@@ -20,6 +28,8 @@ class MapViewModel : ObservableObject {
     @Published var annotations : [ScooterAnnotation] = []
     @Published var selectedAnnotation : ScooterAnnotation?
     @Published var routePolyline : MKRoute?
+    @Published var mapMode : MapMode = .browse
+    @Published var rideStatus: RideStatus = .reserved
     
     private var hasCenteredOnce = false
     private var lastGeocodedLocation: CLLocation?
@@ -147,6 +157,12 @@ class MapViewModel : ObservableObject {
             
         } catch {
             print("Error Drawing Polyline: \(error)")
+        }
+    }
+    
+    func updateStatus(to newStatus: RideStatus) {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8, blendDuration: 0)) {
+            rideStatus = newStatus
         }
     }
 }

@@ -7,16 +7,20 @@
 
 import SwiftUI
 struct ScooterRideActionFeatures: View {
+    @EnvironmentObject private var router : HomeRouter
     let viewModel : MapViewModel
     var body: some View {
         HStack{
             ForEach(ScooterRideActions.allCases,id:\.self){index in
                 Button(action: {
                     if index.rawValue == "Navigate" {
-                        Task{
-                            await viewModel.drawRoute(to:viewModel.selectedAnnotation!.coordinates)
-                            viewModel.selectedAnnotation = nil
-                        }
+//                        Task{
+//                            await viewModel.drawRoute(to:viewModel.selectedAnnotation!.coordinates)
+//                            viewModel.selectedAnnotation = nil
+//                        }
+                        viewModel.selectedAnnotation = nil
+                        router.navigate(to: .rideNavigation)
+                       
                     }
                 }, label: {
                     HStack{
