@@ -10,21 +10,22 @@ import SwiftUI
 struct AnnotationInfoCapsule : View {
     let timeData : String
     let distanceData : String
-    let isVisible : Bool = false
+    let isVisible : Bool
+    
     var body : some View {
         if isVisible {
-            HStack{
-                CapsuleComponent(image:"clock", title: timeData )
+            HStack {
+                CapsuleComponent(image: "clock", title: timeData)
                 Divider()
                     .background(.white)
                     .frame(height: 10)
-                CapsuleComponent(image:"arrow.swap", title: distanceData)
+                CapsuleComponent(image: "arrow.swap", title: distanceData)
             }
             .padding(8)
             .foregroundStyle(.white)
             .background(.black)
             .clipShape(Capsule())
-            .padding(.bottom,10)
+            .transition(.scale.combined(with: .opacity))
         }
     }
 }

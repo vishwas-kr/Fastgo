@@ -14,13 +14,9 @@ struct ScooterRideActionFeatures: View {
             ForEach(ScooterRideActions.allCases,id:\.self){index in
                 Button(action: {
                     if index.rawValue == "Navigate" {
-//                        Task{
-//                            await viewModel.drawRoute(to:viewModel.selectedAnnotation!.coordinates)
-//                            viewModel.selectedAnnotation = nil
-//                        }
+                        let selectedScooter = viewModel.selectedAnnotation
                         viewModel.selectedAnnotation = nil
-                        router.navigate(to: .rideNavigation)
-                       
+                        router.navigate(to: .rideNavigation(selectedScooter))
                     }
                 }, label: {
                     HStack{

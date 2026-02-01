@@ -9,6 +9,8 @@ import SwiftUI
 
 struct InProgressRideCard : View {
     @ObservedObject var viewModel : MapViewModel
+    var onComplete: (() -> Void)? = nil
+    
     var body : some View {
         VStack{
             HStack(spacing:18){
@@ -16,15 +18,16 @@ struct InProgressRideCard : View {
                 Divider()
                     .background(.white)
                     .frame(height: 10)
-                CapsuleComponent(image:"clock", title: "24 min" )
+                CapsuleComponent(image:"clock", title: viewModel.formattedDuration)
                 Divider()
                     .background(.white)
                     .frame(height: 10)
-                CapsuleComponent(image:"arrow.swap", title: "~3 km" )
+                CapsuleComponent(image:"arrow.swap", title: viewModel.formattedDistance)
             }
             .padding(.vertical,12)
             SldeToAction(color: .green, title: "Swipe to finish ride", completedTitle: "Finishing..."){
                 viewModel.updateStatus(to: .completed)
+                onComplete?()
             }
         }
         .padding(6)

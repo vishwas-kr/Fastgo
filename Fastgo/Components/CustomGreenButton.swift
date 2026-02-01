@@ -10,13 +10,15 @@ import SwiftUI
 struct CustomGreenButton: View {
     let action: () -> Void
     let title : String
-    let imageName : String? = ""
+    let imageName : String?
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                Image(systemName: imageName ??  "" )
-                    .font(.title)
-                    .foregroundColor(.white)
+                if let imageName {
+                    Image(systemName: imageName )
+                        .font(.title)
+                        .foregroundColor(.white)
+                }
                 
                 Text(title)
                     .font(.headline)

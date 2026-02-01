@@ -21,7 +21,7 @@ struct ProfileView: View {
                 
                 CustomGreenButton(action: {
                     Task { await AppStateManager.shared.signOut() }
-                }, title: "Logout")
+                }, title: "Logout",imageName: nil)
             }
             .padding()
         }

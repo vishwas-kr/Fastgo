@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RideStateBottomCard : View {
+    @EnvironmentObject private var router: HomeRouter
     @ObservedObject var mapViewModel : MapViewModel
         
     var body : some View {
@@ -15,18 +16,15 @@ struct RideStateBottomCard : View {
             if mapViewModel.rideStatus == .reserved {
                 CustomGreenButton(action: {
                     mapViewModel.updateStatus(to: .cancelled)
-                }, title: "Reserve now (free for 10 mins)")
+                }, title: "Reserve now (free for 10 mins)",imageName: nil)
                 .transition(.scale.combined(with: .opacity))
             }
             
             else if mapViewModel.rideStatus == .inProgress {
-                InProgressRideCard(viewModel: mapViewModel)
+                InProgressRideCard(viewModel: mapViewModel, onComplete: {
+                    router.navigate(to: .rideCompleted)
+                })
                     .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-            
-            else if mapViewModel.rideStatus == .completed {
-                Text("Completed Ride")
-                    .transition(.opacity)
             }
             
             else if mapViewModel.rideStatus == .cancelled {

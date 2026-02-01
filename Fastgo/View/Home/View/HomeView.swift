@@ -66,7 +66,10 @@ struct HomeView: View {
                 switch route {
                 case .profile: ProfileView()
                 case .scanQRCode : QRCodeScanView()
-                case .rideNavigation: RideNavigationView(mapViewModel: mapViewModel)
+                case .rideNavigation(let scooter):
+                    RideNavigationView(mapViewModel: mapViewModel, scooterAnnotation: scooter)
+                case .rideCompleted:
+                    RideCompletedView(mapViewModel: mapViewModel)
                 case .profileOptions(let option):
                     switch option {
                     case .myAccount:

@@ -61,7 +61,7 @@ struct PaymentView: View {
                
             MyAccountTextField(title: "Card Number", text: $text)
             Spacer()
-            CustomGreenButton(action: {}, title: "Add")
+            CustomGreenButton(action: {}, title: "Add",imageName: nil)
         }
         .padding()
         .background(Color(.systemGray6))

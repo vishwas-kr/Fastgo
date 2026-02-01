@@ -37,7 +37,7 @@ struct MyAccountView: View {
                     Task{
                         await viewModel.saveUserData()
                     }
-                }, title: "Save")
+                }, title: "Save",imageName: nil)
                 .disabled(!viewModel.hasUnsavedChanges)
                 .opacity(viewModel.hasUnsavedChanges ? 1 : 0.5)
             }

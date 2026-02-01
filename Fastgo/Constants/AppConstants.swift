@@ -76,6 +76,8 @@ enum AssetImage {
     
     enum Map{
         static let scooterMarker = "marker"
+        static let parkingMarker = "parking"
+        static let user = "boy"
     }
     
     enum Scooter {

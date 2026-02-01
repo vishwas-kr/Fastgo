@@ -11,9 +11,15 @@ struct CustomToolBarBackButton: View {
     @EnvironmentObject private var router : HomeRouter
     var foregroundColor : Color = .black
     var backgroundColor : Color = .white
+    var action: (() -> Void)? = nil
+    
     var body: some View {
         Button {
-            router.navigatePop()
+            if let action = action {
+                action()
+            } else {
+                router.navigatePop()
+            }
         } label: {
             Image(systemName: "chevron.left")
                 .foregroundStyle(Color(foregroundColor))
