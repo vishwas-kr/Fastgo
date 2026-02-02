@@ -69,7 +69,8 @@ struct HomeView: View {
                 case .rideNavigation(let scooter):
                     RideNavigationView(mapViewModel: mapViewModel, scooterAnnotation: scooter)
                 case .rideCompleted:
-                    RideCompletedView(mapViewModel: mapViewModel)
+                    //RideCompletedView(mapViewModel: mapViewModel)
+                    FinishRideView()
                 case .profileOptions(let option):
                     switch option {
                     case .myAccount:

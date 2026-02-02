@@ -42,13 +42,11 @@ struct MapView: View {
                             }
                         }) {
                             ScooterAnnotationContent(
-                                image: annotation.image,
-                                powerColor: annotation.powerColor,
+                                annotation: annotation,
                                 mapViewModel: mapViewModel
                             )
                         }
                         .buttonStyle(.plain)
-                        .disabled(isNavigationMode)
                     }
                 }
             }

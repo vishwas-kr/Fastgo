@@ -13,19 +13,19 @@ struct AnnotationInfoCapsule : View {
     let isVisible : Bool
     
     var body : some View {
-        if isVisible {
-            HStack {
-                CapsuleComponent(image: "clock", title: timeData)
-                Divider()
-                    .background(.white)
-                    .frame(height: 10)
-                CapsuleComponent(image: "arrow.swap", title: distanceData)
-            }
-            .padding(8)
-            .foregroundStyle(.white)
-            .background(.black)
-            .clipShape(Capsule())
-            .transition(.scale.combined(with: .opacity))
+        HStack {
+            CapsuleComponent(image: "clock", title: timeData)
+            Divider()
+                .background(.white)
+                .frame(height: 10)
+            CapsuleComponent(image: "arrow.swap", title: distanceData)
         }
+        .padding(8)
+        .foregroundStyle(.white)
+        .background(.black)
+        .clipShape(Capsule())
+        .opacity(isVisible ? 1 : 0)
+        .scaleEffect(isVisible ? 1 : 0.8)
+        .animation(.easeInOut(duration: 0.2), value: isVisible)
     }
 }

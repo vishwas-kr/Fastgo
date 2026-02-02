@@ -10,6 +10,7 @@ import SwiftUI
 struct RideStateBottomCard : View {
     @EnvironmentObject private var router: HomeRouter
     @ObservedObject var mapViewModel : MapViewModel
+    @ObservedObject var rideViewModel : RideNavigationViewModel
         
     var body : some View {
         ZStack {
@@ -28,7 +29,7 @@ struct RideStateBottomCard : View {
             }
             
             else if mapViewModel.rideStatus == .cancelled {
-                CancellationRideCard(viewModel: mapViewModel)
+                CancellationRideCard(viewModel: mapViewModel, rideViewModel: rideViewModel)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }

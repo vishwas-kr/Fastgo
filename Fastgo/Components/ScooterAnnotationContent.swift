@@ -15,7 +15,7 @@ struct MapAnnotationContainer<Content: View>: View {
             Circle()
                 .fill(.black)
                 .stroke(.white, lineWidth: 4)
-                .frame(width: 45, height: 45)
+                .frame(width: 40, height: 40)
             
             content
         }
@@ -25,22 +25,29 @@ struct MapAnnotationContainer<Content: View>: View {
                 .frame(width: 10, height: 10)
                 .foregroundStyle(.white)
                 .rotationEffect(.degrees(180))
-                .offset(y: 6)
+                .offset(y: 10)
         }
     }
 }
 
 
 struct ScooterAnnotationContent: View {
-    let image: String
-    let powerColor: Color
+    let annotation: ScooterAnnotation
     @ObservedObject var mapViewModel : MapViewModel
+    
+    private var isSelectedForNavigation: Bool {
+        mapViewModel.navigatingToScooter?.id == annotation.id
+    }
+    
+    private var showCapsule: Bool {
+        isSelectedForNavigation && mapViewModel.routePolyline != nil && mapViewModel.rideStatus == .reserved
+    }
     
     var body: some View {
         VStack{
             MapAnnotationContainer {
-                VStack(spacing: 2) {
-                    Image(image)
+                VStack(spacing: 0) {
+                    Image(annotation.image)
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
@@ -48,25 +55,24 @@ struct ScooterAnnotationContent: View {
                         .foregroundStyle(.white)
                     
                     Image("power")
+                        .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 8, height: 8)
-                        .foregroundStyle(powerColor)
+                        .foregroundStyle(annotation.powerColor)
                         .rotationEffect(.degrees(90))
                 }
             }
             AnnotationInfoCapsule(
                 timeData: mapViewModel.formattedDuration,
                 distanceData: mapViewModel.formattedDistance,
-                isVisible: mapViewModel.routePolyline != nil && mapViewModel.rideStatus == .reserved
+                isVisible: showCapsule
             )
             .padding(.top, 6)
-            .animation(.spring(), value: mapViewModel.routePolyline != nil)
-            
         }
     }
 }
 
 #Preview {
-    ScooterAnnotationContent(image: AssetImage.Map.scooterMarker, powerColor: .red , mapViewModel: MapViewModel())
+    ScooterAnnotationContent(annotation: .preview, mapViewModel: MapViewModel())
 }

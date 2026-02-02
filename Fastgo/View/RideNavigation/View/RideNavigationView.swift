@@ -11,6 +11,7 @@ struct RideNavigationView: View {
     @EnvironmentObject private var router: HomeRouter
     @ObservedObject var mapViewModel: MapViewModel
     let scooterAnnotation: ScooterAnnotation?
+    @StateObject private var rideViewModel = RideNavigationViewModel()
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -28,7 +29,7 @@ struct RideNavigationView: View {
                 Spacer()
                 
                 LocationButton(viewModel: mapViewModel)
-                RideStateBottomCard(mapViewModel: mapViewModel)
+                RideStateBottomCard(mapViewModel: mapViewModel,rideViewModel: rideViewModel)
             }
             .padding(22)
         }
@@ -45,6 +46,12 @@ struct RideNavigationView: View {
         .onAppear {
             if let scooter = scooterAnnotation {
                 mapViewModel.startNavigation(to: scooter)
+            }
+        }
+        .onChange(of: rideViewModel.didScanQRSuccessfully) { oldValue, newValue in
+            if newValue {
+                mapViewModel.updateStatus(to: .inProgress)
+                rideViewModel.resetQRScanStatus()
             }
         }
     }

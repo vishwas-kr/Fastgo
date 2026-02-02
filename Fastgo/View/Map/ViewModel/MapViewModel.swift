@@ -185,6 +185,37 @@ class MapViewModel : ObservableObject {
         
         Task {
             await drawRoute(to: scooter.coordinates)
+            await MainActor.run {
+                fitCameraToRoute(destination: scooter.coordinates)
+            }
+        }
+    }
+    
+    private func fitCameraToRoute(destination: CLLocationCoordinate2D) {
+        guard let userLocation = locationManager.currentLocation else { return }
+        
+        let userCoord = userLocation.coordinate
+        
+        let minLat = min(userCoord.latitude, destination.latitude)
+        let maxLat = max(userCoord.latitude, destination.latitude)
+        let minLon = min(userCoord.longitude, destination.longitude)
+        let maxLon = max(userCoord.longitude, destination.longitude)
+        
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+        
+        let latDelta = (maxLat - minLat) * 1.5
+        let lonDelta = (maxLon - minLon) * 1.5
+        
+        let span = MKCoordinateSpan(
+            latitudeDelta: max(latDelta, 0.01),
+            longitudeDelta: max(lonDelta, 0.01)
+        )
+        
+        withAnimation(.easeInOut(duration: 0.5)) {
+            cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
         }
     }
     
