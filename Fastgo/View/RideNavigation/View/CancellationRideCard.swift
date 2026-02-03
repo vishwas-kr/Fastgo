@@ -37,7 +37,7 @@ struct CancellationRideCard : View {
                 RoundedRectangle(cornerRadius: 33).fill(.cardCancel)
             }
             CustomGreenButton(action: {
-                router.navigate(to: .scanQRCode)
+                router.navigate(to: .scanQRCode(.rideNavigation))
             }, title: "Scan QR", imageName: "qrcode.viewfinder")
         }
         .onAppear {

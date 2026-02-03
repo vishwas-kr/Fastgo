@@ -38,7 +38,7 @@ struct HomeView: View {
                     LocationButton(viewModel: mapViewModel)
                     
                     Button(action:{
-                        router.navigate(to: .scanQRCode)
+                        router.navigate(to: .scanQRCode(.home))
                     }){
                         HStack(spacing: 8) {
                             Image(systemName: "qrcode.viewfinder")
@@ -65,7 +65,7 @@ struct HomeView: View {
             .navigationDestination(for: HomeRoutes.self){ route in
                 switch route {
                 case .profile: ProfileView()
-                case .scanQRCode : QRCodeScanView()
+                case .scanQRCode(let source): QRCodeScanView(source: source, mapViewModel: mapViewModel)
                 case .rideNavigation(let scooter):
                     RideNavigationView(mapViewModel: mapViewModel, scooterAnnotation: scooter)
                 case .rideCompleted:

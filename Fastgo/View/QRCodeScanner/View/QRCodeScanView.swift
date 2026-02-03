@@ -12,6 +12,8 @@ struct QRCodeScanView: View {
     
     @StateObject private var viewModel = QRCodeScanViewModel()
     @EnvironmentObject var router: HomeRouter
+    let source: QRScanSource
+    @ObservedObject var mapViewModel: MapViewModel
     let rotationDegrees: [Double] = [0, 90, 180, 270]
     
     var body: some View {
@@ -82,8 +84,16 @@ struct QRCodeScanView: View {
         .onChange(of: viewModel.scannedCode) { oldValue, newValue in
             guard newValue != nil else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                RideNavigationViewModel.notifyQRScanSuccess()
-                router.navigatePop()
+                switch source {
+                case .home:
+                    mapViewModel.updateStatus(to: .inProgress)
+                    mapViewModel.centerUserLocation()
+                    router.navigatePop()
+                    router.navigate(to: .rideNavigation(nil))
+                case .rideNavigation:
+                    RideNavigationViewModel.notifyQRScanSuccess()
+                    router.navigatePop()
+                }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -110,5 +120,6 @@ struct QRCodeScanView: View {
 
 
 #Preview {
-    QRCodeScanView()
+    QRCodeScanView(source: .home, mapViewModel: MapViewModel())
+        .environmentObject(HomeRouter())
 }

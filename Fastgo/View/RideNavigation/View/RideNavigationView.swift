@@ -19,13 +19,6 @@ struct RideNavigationView: View {
                 .ignoresSafeArea(.all)
             
             VStack {
-//                AnnotationInfoCapsule(
-//                    timeData: mapViewModel.formattedDuration,
-//                    distanceData: mapViewModel.formattedDistance,
-//                    isVisible: mapViewModel.routePolyline != nil && mapViewModel.rideStatus == .reserved
-//                )
-//                .animation(.spring(), value: mapViewModel.routePolyline != nil)
-                
                 Spacer()
                 
                 LocationButton(viewModel: mapViewModel)
@@ -44,7 +37,7 @@ struct RideNavigationView: View {
         }
         .toolbarBackground(.hidden, for: .navigationBar)
         .onAppear {
-            if let scooter = scooterAnnotation {
+            if let scooter = scooterAnnotation, mapViewModel.rideStatus == .reserved {
                 mapViewModel.startNavigation(to: scooter)
             }
         }
