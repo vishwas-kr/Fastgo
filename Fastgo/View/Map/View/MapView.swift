@@ -28,7 +28,10 @@ struct MapView: View {
                 ForEach(mapViewModel.parkingAnnotations) { parking in
                     Annotation("", coordinate: parking.coordinates) {
                         Button(action: { mapViewModel.selectParkingAnnotation(parking) }) {
-                            ParkingAnnotationView()
+                            ParkingAnnotationView(
+                                annotation: parking,
+                                mapViewModel: mapViewModel
+                            )
                         }
                         .buttonStyle(.plain)
                     }

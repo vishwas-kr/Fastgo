@@ -172,6 +172,7 @@ class MapViewModel : ObservableObject {
         
         if newStatus == .inProgress {
             mapMode = .riding
+            routePolyline = nil
             loadMockParkingSpots()
         } else if newStatus == .completed {
             mapMode = .browse
