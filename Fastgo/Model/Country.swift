@@ -11,9 +11,8 @@ struct Country: Identifiable, Hashable {
     public let id = UUID()
     let name: String
     let code: String
-    var dialCode: String // You would need a source for this
-
-    // Example function to generate flag emojis
+    var dialCode: String
+    
     var flag: String {
         let base: UInt32 = 127397
         var s = ""

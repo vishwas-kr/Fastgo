@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct FinishRideView: View {
+    @EnvironmentObject private var router: HomeRouter
+    @ObservedObject var viewModel : MapViewModel
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .bottom){
@@ -22,7 +24,7 @@ struct FinishRideView: View {
                 }
                 VStack(spacing:0){
                     RoundedRectangle(cornerRadius: 40)
-                        .frame(height: UIScreen.main.bounds.height * 0.72)
+                        .frame(height: geo.size.height * 0.72)
                         .foregroundStyle(Color(.systemGray6))
                         .overlay(
                             VStack{
@@ -32,7 +34,10 @@ struct FinishRideView: View {
                                     FinishRideCard(image: data.image, title: data.title, desc: data.desc)
                                 }
                                 
-                                CustomGreenButton(action: {}, title: "Take a photo", imageName: "camera")
+                                CustomGreenButton(action: {
+                                    router.navigateToHome()
+                                    viewModel.resetRideState()
+                                }, title: "Take a photo", imageName: "camera")
                                     .padding(.top,12)
                             }
                                 .padding()
@@ -62,5 +67,5 @@ struct FinishRideView: View {
 }
 
 #Preview {
-    FinishRideView()
+    FinishRideView(viewModel: MapViewModel())
 }
