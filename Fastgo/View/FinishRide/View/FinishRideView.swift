@@ -12,7 +12,7 @@ struct FinishRideView: View {
         GeometryReader { geo in
             ZStack(alignment: .bottom){
                 VStack {
-                    Image("n6")
+                    Image(AssetImage.FinishRide.background)
                         .resizable()
                         .scaledToFill()
                         .frame(width:geo.size.width, height:geo.size.height * 0.37)
@@ -43,12 +43,6 @@ struct FinishRideView: View {
             }
             .background(Color(.systemGray6))
             .navigationBarBackButtonHidden(true)
-            .toolbar{
-                ToolbarItem(placement: .topBarLeading){
-                    CustomToolBarBackButton()
-                }
-            }
-            
         }
     }
     private var header : some View {
@@ -60,8 +54,7 @@ struct FinishRideView: View {
             
             Text("Don't block the pathways, take the photo to verify parking and end your ride.")
                 .font(.subheadline)
-                .fontWeight(.light)
-                .foregroundStyle(.black)
+                .foregroundStyle(.gray)
             
         }
         .padding(.bottom,22)

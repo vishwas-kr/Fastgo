@@ -28,8 +28,7 @@ struct FinishRideCard: View {
                                 .lineLimit(1)
                             Text(desc)
                                 .font(.caption)
-                                .fontWeight(.light)
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.gray)
                                 .lineLimit(2)
                                 .fixedSize(horizontal: false, vertical: true)
                         }

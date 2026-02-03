@@ -83,4 +83,11 @@ enum AssetImage {
     enum Scooter {
         static let scooter = "scooter"
     }
+    
+    enum FinishRide {
+        static let background = "finishRideBackground"
+        static let slowDown = "slowZone"
+        static let noParking = "noParking"
+        static let parking = "parking"
+    }
 }

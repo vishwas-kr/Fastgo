@@ -36,11 +36,11 @@ enum FinishRideData : CaseIterable {
     var image : String {
         switch self {
         case .parking:
-            return "n6"
+            return AssetImage.FinishRide.parking
         case .noParking:
-            return "n6"
+            return AssetImage.FinishRide.noParking
         case .slowZone:
-            return "n6"
+            return AssetImage.FinishRide.slowDown
         }
     }
 }
