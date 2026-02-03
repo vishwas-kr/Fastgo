@@ -22,39 +22,6 @@ struct RideStatusModel : Identifiable {
     let status : RideStatus
 }
 
-
-//struct Ride: Identifiable, Codable {
-//    let id: String
-//    let scooterId: String
-//    let status: RideStatus
-//    let startLatitude: Double
-//    let startLongitude: Double
-//    let endLatitude: Double
-//    let endLongitude: Double
-//    let startLocationName: String
-//    let endLocationName: String
-//    let distanceKm: Double
-//    let fareAmount: Double
-//    let promoCode: String?
-//    let rideDate: Date
-//    
-//    enum CodingKeys : String, CodingKey {
-//        case id
-//        case scooterId = "scooter_id"
-//        case status
-//        case startLatitude = "start_latitude"
-//        case startLongitude = "start_longitude"
-//        case endLatitude = "end_latitude"
-//        case endLongitude = "end_longitude"
-//        case startLocationName = "start_location_name"
-//        case endLocationName = "end_location_name"
-//        case distanceKm = "distance_km"
-//        case fareAmount = "fare_amount"
-//        case promoCode
-//        case rideDate = "ride_date"
-//    }
-//}
-
 struct Ride: Identifiable, Codable {
     let id: String
     let userId: String
@@ -104,20 +71,6 @@ struct Ride: Identifiable, Codable {
         case createdAt = "created_at"
     }
 }
-
-//struct ActiveRide {
-//    let rideId: UUID
-//    let scooter: Scooter
-//
-//    let startedAt: Date
-//    let startCoordinate: CLLocationCoordinate2D
-//
-//    var currentCoordinate: CLLocationCoordinate2D
-//    var distanceTravelledKm: Double
-//    var durationMinutes: Int
-//
-//    var batteryRemaining: Int
-//}
 
 struct RideHistoryItem: Identifiable {
     let id: String

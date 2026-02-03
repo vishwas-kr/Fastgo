@@ -15,11 +15,17 @@ enum ProfileOptionRoutes : Hashable {
     case inviteFriends
 }
 
+enum QRScanSource: Hashable {
+    case home
+    case rideNavigation
+}
+
 enum HomeRoutes : Hashable {
     case profile
     case profileOptions(ProfileOptionRoutes)
-    case scanQRCode
-    case rideNavigation
+    case scanQRCode(QRScanSource)
+    case rideNavigation(ScooterAnnotation?)
+    case rideCompleted
 }
 
 final class HomeRouter : ObservableObject {

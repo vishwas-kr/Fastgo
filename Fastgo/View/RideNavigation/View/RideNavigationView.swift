@@ -8,11 +8,49 @@
 import SwiftUI
 
 struct RideNavigationView: View {
+    @EnvironmentObject private var router: HomeRouter
+    @ObservedObject var mapViewModel: MapViewModel
+    let scooterAnnotation: ScooterAnnotation?
+    @StateObject private var rideViewModel = RideNavigationViewModel()
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack(alignment: .bottom) {
+            MapView(mapViewModel: mapViewModel, isNavigationMode: true)
+                .ignoresSafeArea(.all)
+            
+            VStack {
+                Spacer()
+                
+                LocationButton(viewModel: mapViewModel)
+                RideStateBottomCard(mapViewModel: mapViewModel,rideViewModel: rideViewModel)
+            }
+            .padding(22)
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                CustomToolBarBackButton(action: {
+                    mapViewModel.resetRideState()
+                    router.navigatePop()
+                })
+            }
+        }
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .onAppear {
+            if let scooter = scooterAnnotation, mapViewModel.rideStatus == .reserved {
+                mapViewModel.startNavigation(to: scooter)
+            }
+        }
+        .onChange(of: rideViewModel.didScanQRSuccessfully) { oldValue, newValue in
+            if newValue {
+                mapViewModel.updateStatus(to: .inProgress)
+                rideViewModel.resetQRScanStatus()
+            }
+        }
     }
 }
 
 #Preview {
-    RideNavigationView()
+    RideNavigationView(mapViewModel: MapViewModel(), scooterAnnotation: nil)
+        .environmentObject(HomeRouter())
 }

@@ -9,6 +9,14 @@ import MapKit
 import _MapKit_SwiftUI
 import Combine
 
+enum MapMode {
+    case browse
+    case navigateToScooter
+    case riding
+    case navigateToParking
+}
+
+
 @MainActor
 class MapViewModel : ObservableObject {
     let locationManager = LocationManager()
@@ -20,6 +28,13 @@ class MapViewModel : ObservableObject {
     @Published var annotations : [ScooterAnnotation] = []
     @Published var selectedAnnotation : ScooterAnnotation?
     @Published var routePolyline : MKRoute?
+    @Published var mapMode : MapMode = .browse
+    @Published var rideStatus: RideStatus = .reserved
+    
+    @Published var parkingAnnotations: [ParkingAnnotation] = []
+    @Published var navigatingToScooter: ScooterAnnotation?
+    @Published var selectedParkingAnnotation: ParkingAnnotation?
+    @Published var isNavigationMode: Bool = false
     
     private var hasCenteredOnce = false
     private var lastGeocodedLocation: CLLocation?
@@ -148,5 +163,131 @@ class MapViewModel : ObservableObject {
         } catch {
             print("Error Drawing Polyline: \(error)")
         }
+    }
+    
+    func updateStatus(to newStatus: RideStatus) {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8, blendDuration: 0)) {
+            rideStatus = newStatus
+        }
+        
+        if newStatus == .inProgress {
+            mapMode = .riding
+            routePolyline = nil
+            loadMockParkingSpots()
+        } else if newStatus == .completed {
+            mapMode = .browse
+        }
+    }
+    
+    func startNavigation(to scooter: ScooterAnnotation) {
+        navigatingToScooter = scooter
+        isNavigationMode = true
+        mapMode = .navigateToScooter
+        
+        Task {
+            await drawRoute(to: scooter.coordinates)
+            await MainActor.run {
+                fitCameraToRoute(destination: scooter.coordinates)
+            }
+        }
+    }
+    
+    private func fitCameraToRoute(destination: CLLocationCoordinate2D) {
+        guard let userLocation = locationManager.currentLocation else { return }
+        
+        let userCoord = userLocation.coordinate
+        
+        let minLat = min(userCoord.latitude, destination.latitude)
+        let maxLat = max(userCoord.latitude, destination.latitude)
+        let minLon = min(userCoord.longitude, destination.longitude)
+        let maxLon = max(userCoord.longitude, destination.longitude)
+        
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+        
+        let latDelta = (maxLat - minLat) * 1.5
+        let lonDelta = (maxLon - minLon) * 1.5
+        
+        let span = MKCoordinateSpan(
+            latitudeDelta: max(latDelta, 0.01),
+            longitudeDelta: max(lonDelta, 0.01)
+        )
+        
+        withAnimation(.easeInOut(duration: 0.5)) {
+            cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+        }
+    }
+    
+    func selectParkingAnnotation(_ parking: ParkingAnnotation) {
+        selectedParkingAnnotation = parking
+        mapMode = .navigateToParking
+        
+        Task {
+            await drawRoute(to: parking.coordinates)
+        }
+    }
+    
+    func resetRideState() {
+        withAnimation {
+            routePolyline = nil
+            navigatingToScooter = nil
+            selectedParkingAnnotation = nil
+            parkingAnnotations = []
+            isNavigationMode = false
+            mapMode = .browse
+            rideStatus = .reserved
+        }
+    }
+    
+    private func loadMockParkingSpots() {
+        guard let userLoc = locationManager.currentLocation else { return }
+        
+        let baseLat = userLoc.coordinate.latitude
+        let baseLon = userLoc.coordinate.longitude
+        
+        parkingAnnotations = [
+            ParkingAnnotation(
+                id: "parking_1",
+                coordinate: CLLocationCoordinate2D(latitude: baseLat + 0.002, longitude: baseLon + 0.001),
+                name: "Central Parking",
+                spotsAvailable: 8
+            ),
+            ParkingAnnotation(
+                id: "parking_2",
+                coordinate: CLLocationCoordinate2D(latitude: baseLat - 0.001, longitude: baseLon + 0.002),
+                name: "Mall Parking",
+                spotsAvailable: 3
+            ),
+            ParkingAnnotation(
+                id: "parking_3",
+                coordinate: CLLocationCoordinate2D(latitude: baseLat + 0.001, longitude: baseLon - 0.002),
+                name: "Street Parking",
+                spotsAvailable: 12
+            ),
+            ParkingAnnotation(
+                id: "parking_4",
+                coordinate: CLLocationCoordinate2D(latitude: baseLat - 0.002, longitude: baseLon - 0.001),
+                name: "Station Parking",
+                spotsAvailable: 1
+            )
+        ]
+    }
+    
+    var formattedDuration: String {
+        guard let route = routePolyline else { return "--" }
+        let minutes = Int(route.expectedTravelTime / 60)
+        return "\(minutes) min"
+    }
+    
+    var formattedDistance: String {
+        guard let route = routePolyline else { return "--" }
+        let km = route.distance / 1000
+        return String(format: "%.1f km", km)
+    }
+    
+    var currentUserCoordinate: CLLocationCoordinate2D? {
+        locationManager.currentLocation?.coordinate
     }
 }

@@ -52,7 +52,7 @@ struct PromoCodeView: View {
            
             Spacer()
 
-            CustomGreenButton(action: {}, title: "Add")
+            CustomGreenButton(action: {}, title: "Add",imageName: nil)
         }
         .padding()
         .background(Color(.systemGray6))
