@@ -57,6 +57,48 @@ Based on the Fastgo Scooty design specifications, the app includes:
     </dict>
     </plist>
     ```
+## Supabase Database Setup
+Run this SQL in the Supabase SQL Editor:
+
+```
+CREATE TABLE users (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    phone VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100),
+    gender VARCHAR(20),
+    about_me VARCHAR(100),
+    date_of_birth DATE,
+    profile_image TEXT,
+    total_rides INTEGER NOT NULL DEFAULT 0,
+    total_distance DECIMAL(10,2) NOT NULL DEFAULT 0.0,
+    user_status JSONB NOT NULL DEFAULT '{"basic_info_completed": false}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read their own profile"
+ON users
+FOR SELECT
+USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert their own profile"
+ON users
+FOR INSERT
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile"
+ON users
+FOR UPDATE
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can delete their own profile"
+ON users
+FOR DELETE
+USING (auth.uid() = id);
+```
 
  ### App Screenshots
 <p align="left">
