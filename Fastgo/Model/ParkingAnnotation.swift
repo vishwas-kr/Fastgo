@@ -12,7 +12,6 @@ struct ParkingAnnotation: Identifiable, Equatable {
     let id: String
     let coordinate: CLLocationCoordinate2D
     let name: String
-    let spotsAvailable: Int
     
     static func == (lhs: ParkingAnnotation, rhs: ParkingAnnotation) -> Bool {
         lhs.id == rhs.id
@@ -20,4 +19,12 @@ struct ParkingAnnotation: Identifiable, Equatable {
     
     var coordinates: CLLocationCoordinate2D { coordinate }
     var image: String { AssetImage.Map.scooterMarker }
+}
+
+
+struct Parking: Decodable {
+    let id: String
+    let name: String
+    let latitude: Double
+    let longitude: Double
 }

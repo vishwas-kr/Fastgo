@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct CancellationRideCard : View {
-    @ObservedObject var viewModel : MapViewModel
-    @EnvironmentObject private var router : HomeRouter
-    @ObservedObject var rideViewModel : RideNavigationViewModel
+    @ObservedObject var mapViewModel: MapViewModel
+    @EnvironmentObject private var router: HomeRouter
+    @ObservedObject var rideViewModel: RideNavigationViewModel
     
     var body : some View {
-        VStack(spacing:18){
+        VStack(spacing: 18) {
             VStack(spacing: 12) {
                 Text("Reservation time left")
                     .font(.subheadline)
@@ -27,13 +27,13 @@ struct CancellationRideCard : View {
                     title: rideViewModel.isTimerExpired ? "Ride can't be cancelled" : "Swipe to cancel",
                     completedTitle: "Cancelling"
                 ) {
-                    viewModel.updateStatus(to: .reserved)
+                    rideViewModel.updateStatus(to: .reserved, userLocation: mapViewModel.currentUserLocation)
                 }
                 .disabled(rideViewModel.isTimerExpired)
                 .opacity(rideViewModel.isTimerExpired ? 0.5 : 1.0)
             }
             .padding(6)
-            .background{
+            .background {
                 RoundedRectangle(cornerRadius: 33).fill(.cardCancel)
             }
             CustomGreenButton(action: {
@@ -50,7 +50,6 @@ struct CancellationRideCard : View {
 }
 
 
-#Preview{
-    
-    CancellationRideCard(viewModel: MapViewModel(), rideViewModel: RideNavigationViewModel())
+#Preview {
+    CancellationRideCard(mapViewModel: MapViewModel(), rideViewModel: RideNavigationViewModel())
 }

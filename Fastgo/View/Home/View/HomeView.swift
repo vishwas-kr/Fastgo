@@ -12,12 +12,13 @@ struct HomeView: View {
     @StateObject private var router = HomeRouter()
     @StateObject private var viewModel = HomeViewModel()
     @StateObject private var mapViewModel = MapViewModel()
+    @StateObject private var rideViewModel = RideNavigationViewModel()
     @State private var sheetHeight: CGFloat = .zero
     
     var body: some View {
         NavigationStack(path: $router.navPath){
             ZStack(){
-                MapView(mapViewModel: mapViewModel)
+                MapView(mapViewModel: mapViewModel, rideViewModel: rideViewModel)
                 
                 FadingGradient(color1: .newGray, color2:  Color.white.opacity(0.1), location1: 0.0, location2: 0.2, startPoint: .top, endPoint: .bottom)
                 
@@ -65,11 +66,11 @@ struct HomeView: View {
             .navigationDestination(for: HomeRoutes.self){ route in
                 switch route {
                 case .profile: ProfileView()
-                case .scanQRCode(let source): QRCodeScanView(source: source, mapViewModel: mapViewModel)
+                case .scanQRCode(let source): QRCodeScanView(source: source, mapViewModel: mapViewModel, rideViewModel: rideViewModel)
                 case .rideNavigation(let scooter):
-                    RideNavigationView(mapViewModel: mapViewModel, scooterAnnotation: scooter)
+                    RideNavigationView(mapViewModel: mapViewModel, rideViewModel: rideViewModel, scooterAnnotation: scooter)
                 case .rideCompleted:
-                    FinishRideView(viewModel: mapViewModel)
+                    FinishRideView(mapViewModel: mapViewModel, rideViewModel: rideViewModel)
                 case .profileOptions(let option):
                     switch option {
                     case .myAccount:
@@ -89,7 +90,7 @@ struct HomeView: View {
             }
         }
         .sheet(item: $mapViewModel.selectedAnnotation) { annotation in
-            RideDetailsView(annotation: annotation, mapViewModel: mapViewModel)
+            RideDetailsView(annotation: annotation, mapViewModel: mapViewModel, rideViewModel: rideViewModel)
                 .fixedSize(horizontal: false, vertical: true)
                             .modifier(GetHeightModifier(height: $sheetHeight))
                             .presentationDetents([.height(sheetHeight)])

@@ -33,18 +33,18 @@ struct MapAnnotationContainer<Content: View>: View {
 
 struct ScooterAnnotationContent: View {
     let annotation: ScooterAnnotation
-    @ObservedObject var mapViewModel : MapViewModel
+    @ObservedObject var rideViewModel: RideNavigationViewModel
     
     private var isSelectedForNavigation: Bool {
-        mapViewModel.navigatingToScooter?.id == annotation.id
+        rideViewModel.navigatingToScooter?.id == annotation.id
     }
     
     private var showCapsule: Bool {
-        isSelectedForNavigation && mapViewModel.routePolyline != nil && mapViewModel.rideStatus == .reserved
+        isSelectedForNavigation && rideViewModel.routePolyline != nil && rideViewModel.rideStatus == .reserved
     }
     
     var body: some View {
-        VStack{
+        VStack {
             MapAnnotationContainer {
                 VStack(spacing: 0) {
                     Image(annotation.image)
@@ -64,8 +64,8 @@ struct ScooterAnnotationContent: View {
                 }
             }
             AnnotationInfoCapsule(
-                timeData: mapViewModel.formattedDuration,
-                distanceData: mapViewModel.formattedDistance,
+                timeData: rideViewModel.formattedDuration,
+                distanceData: rideViewModel.formattedDistance,
                 isVisible: showCapsule
             )
             .padding(.top, 6)
@@ -74,5 +74,5 @@ struct ScooterAnnotationContent: View {
 }
 
 #Preview {
-    ScooterAnnotationContent(annotation: .preview, mapViewModel: MapViewModel())
+    ScooterAnnotationContent(annotation: .preview, rideViewModel: RideNavigationViewModel())
 }
