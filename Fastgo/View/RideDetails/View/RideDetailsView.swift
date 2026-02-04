@@ -9,28 +9,29 @@ import SwiftUI
 
 struct RideDetailsView: View {
     let annotation: ScooterAnnotation
-    @StateObject var mapViewModel: MapViewModel
+    @ObservedObject var mapViewModel: MapViewModel
+    @ObservedObject var rideViewModel: RideNavigationViewModel
     
     var body: some View {
-        VStack{
+        VStack {
             ScooterDetail(annotation: annotation)
-            VStack(spacing:22){
-                ScooterRideActionFeatures(viewModel: mapViewModel)
+            VStack(spacing: 22) {
+                ScooterRideActionFeatures(mapViewModel: mapViewModel, rideViewModel: rideViewModel)
                 
                 ScooterDetailsOptionsMenu()
                 
                 ScooterAction()
             }
             .padding()
-            .background( Color(.systemGray6).ignoresSafeArea(edges: .bottom))
-            .clipShape(RoundedCorners(radius:32))
-            
-        }.background(.white)
+            .background(Color(.systemGray6).ignoresSafeArea(edges: .bottom))
+            .clipShape(RoundedCorners(radius: 32))
+        }
+        .background(.white)
     }
 }
 
 
- #Preview {
+#Preview {
     let scooter = Scooter(
         id: "preview_scooter",
         uniqueCode: "Uru Cruiser",
@@ -42,6 +43,6 @@ struct RideDetailsView: View {
         status: .available
     )
     let annotation = ScooterAnnotation(id: scooter.id, coordinate: scooter.coordinate, scooter: scooter)
-     
-     RideDetailsView(annotation: annotation, mapViewModel: MapViewModel())
- }
+    
+    RideDetailsView(annotation: annotation, mapViewModel: MapViewModel(), rideViewModel: RideNavigationViewModel())
+}

@@ -9,42 +9,43 @@ import SwiftUI
 
 struct FinishRideView: View {
     @EnvironmentObject private var router: HomeRouter
-    @ObservedObject var viewModel : MapViewModel
+    @ObservedObject var mapViewModel: MapViewModel
+    @ObservedObject var rideViewModel: RideNavigationViewModel
+    
     var body: some View {
         GeometryReader { geo in
-            ZStack(alignment: .bottom){
+            ZStack(alignment: .bottom) {
                 VStack {
                     Image(AssetImage.FinishRide.background)
                         .resizable()
                         .scaledToFill()
-                        .frame(width:geo.size.width, height:geo.size.height * 0.37)
+                        .frame(width: geo.size.width, height: geo.size.height * 0.37)
                         .ignoresSafeArea()
                     
                     Spacer()
                 }
-                VStack(spacing:0){
+                VStack(spacing: 0) {
                     RoundedRectangle(cornerRadius: 40)
                         .frame(height: geo.size.height * 0.72)
                         .foregroundStyle(Color(.systemGray6))
                         .overlay(
-                            VStack{
+                            VStack {
                                 header
                                 
-                                ForEach(FinishRideData.allCases, id:\.self){ data in
+                                ForEach(FinishRideData.allCases, id: \.self) { data in
                                     FinishRideCard(image: data.image, title: data.title, desc: data.desc)
                                 }
                                 
                                 CustomGreenButton(action: {
+                                    rideViewModel.resetRideState()
                                     router.navigateToHome()
-                                    viewModel.resetRideState()
                                 }, title: "Take a photo", imageName: "camera")
-                                    .padding(.top,12)
+                                .padding(.top, 12)
                             }
-                                .padding()
+                            .padding()
                         )
                 }
-                .frame(width:geo.size.width, height:geo.size.height * 0.7)
-                
+                .frame(width: geo.size.width, height: geo.size.height * 0.7)
             }
             .background(Color(.systemGray6))
             .navigationBarBackButtonHidden(true)
@@ -67,5 +68,5 @@ struct FinishRideView: View {
 }
 
 #Preview {
-    FinishRideView(viewModel: MapViewModel())
+    FinishRideView(mapViewModel: MapViewModel(), rideViewModel: RideNavigationViewModel())
 }

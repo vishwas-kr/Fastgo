@@ -10,19 +10,19 @@ import SwiftUI
 struct RideNavigationView: View {
     @EnvironmentObject private var router: HomeRouter
     @ObservedObject var mapViewModel: MapViewModel
+    @ObservedObject var rideViewModel: RideNavigationViewModel
     let scooterAnnotation: ScooterAnnotation?
-    @StateObject private var rideViewModel = RideNavigationViewModel()
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            MapView(mapViewModel: mapViewModel, isNavigationMode: true)
+            MapView(mapViewModel: mapViewModel, rideViewModel: rideViewModel, isNavigationMode: true)
                 .ignoresSafeArea(.all)
             
             VStack {
                 Spacer()
                 
                 LocationButton(viewModel: mapViewModel)
-                RideStateBottomCard(mapViewModel: mapViewModel,rideViewModel: rideViewModel)
+                RideStateBottomCard(mapViewModel: mapViewModel, rideViewModel: rideViewModel)
             }
             .padding(22)
         }
@@ -30,20 +30,23 @@ struct RideNavigationView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 CustomToolBarBackButton(action: {
-                    mapViewModel.resetRideState()
+                    rideViewModel.resetRideState()
                     router.navigatePop()
                 })
             }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
         .onAppear {
-            if let scooter = scooterAnnotation, mapViewModel.rideStatus == .reserved {
-                mapViewModel.startNavigation(to: scooter)
+            if let scooter = scooterAnnotation, rideViewModel.rideStatus == .reserved {
+                Task {
+                    await rideViewModel.startNavigation(to: scooter, userLocation: mapViewModel.currentUserLocation)
+                    mapViewModel.fitCameraToRoute(destination: scooter.coordinates)
+                }
             }
         }
         .onChange(of: rideViewModel.didScanQRSuccessfully) { oldValue, newValue in
             if newValue {
-                mapViewModel.updateStatus(to: .inProgress)
+                rideViewModel.updateStatus(to: .inProgress, userLocation: mapViewModel.currentUserLocation)
                 rideViewModel.resetQRScanStatus()
             }
         }
@@ -51,6 +54,6 @@ struct RideNavigationView: View {
 }
 
 #Preview {
-    RideNavigationView(mapViewModel: MapViewModel(), scooterAnnotation: nil)
+    RideNavigationView(mapViewModel: MapViewModel(), rideViewModel: RideNavigationViewModel(), scooterAnnotation: nil)
         .environmentObject(HomeRouter())
 }

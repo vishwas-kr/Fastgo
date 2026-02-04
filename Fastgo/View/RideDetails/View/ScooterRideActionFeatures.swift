@@ -6,31 +6,32 @@
 //
 
 import SwiftUI
+
 struct ScooterRideActionFeatures: View {
-    @EnvironmentObject private var router : HomeRouter
-    let viewModel : MapViewModel
+    @EnvironmentObject private var router: HomeRouter
+    @ObservedObject var mapViewModel: MapViewModel
+    @ObservedObject var rideViewModel: RideNavigationViewModel
+    
     var body: some View {
-        HStack{
-            ForEach(ScooterRideActions.allCases,id:\.self){index in
+        HStack {
+            ForEach(ScooterRideActions.allCases, id: \.self) { index in
                 Button(action: {
                     if index.rawValue == "Navigate" {
-                        let selectedScooter = viewModel.selectedAnnotation
-                        viewModel.selectedAnnotation = nil
+                        let selectedScooter = mapViewModel.selectedAnnotation
+                        mapViewModel.selectedAnnotation = nil
                         router.navigate(to: .rideNavigation(selectedScooter))
                     }
                 }, label: {
-                    HStack{
+                    HStack {
                         Image(systemName: index.image)
                         Text(index.rawValue)
                             .font(.callout)
                     }
                     .padding(10)
-                    
                 })
                 .foregroundStyle(.black)
-                    .background(.white)
-                    .clipShape(Capsule())
-                
+                .background(.white)
+                .clipShape(Capsule())
             }
         }
         .padding(.top)

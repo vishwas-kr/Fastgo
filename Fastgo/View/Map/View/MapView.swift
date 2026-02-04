@@ -9,7 +9,8 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
-    @ObservedObject var mapViewModel : MapViewModel
+    @ObservedObject var mapViewModel: MapViewModel
+    @ObservedObject var rideViewModel: RideNavigationViewModel
     var isNavigationMode: Bool = false
     
     var body: some View {
@@ -17,27 +18,31 @@ struct MapView: View {
             if isNavigationMode {
                 if let userCoord = mapViewModel.currentUserCoordinate {
                     Annotation("", coordinate: userCoord) {
-                        UserLocationAnnotation(isRiding: mapViewModel.rideStatus == .inProgress)
+                        UserLocationAnnotation(isRiding: rideViewModel.rideStatus == .inProgress)
                     }
                 }
             } else {
                 UserAnnotation()
             }
             
-            if mapViewModel.rideStatus == .inProgress {
-                ForEach(mapViewModel.parkingAnnotations) { parking in
+            if rideViewModel.rideStatus == .inProgress {
+                ForEach(rideViewModel.parkingAnnotations) { parking in
                     Annotation("", coordinate: parking.coordinates) {
-                        Button(action: { mapViewModel.selectParkingAnnotation(parking) }) {
+                        Button(action: {
+                            Task {
+                                await rideViewModel.selectParkingAnnotation(parking, userLocation: mapViewModel.currentUserLocation)
+                            }
+                        }) {
                             ParkingAnnotationView(
                                 annotation: parking,
-                                mapViewModel: mapViewModel
+                                rideViewModel: rideViewModel
                             )
                         }
                         .buttonStyle(.plain)
                     }
                 }
             } else {
-                ForEach(mapViewModel.annotations) { annotation in
+                ForEach(rideViewModel.scooterAnnotations) { annotation in
                     Annotation("", coordinate: annotation.coordinates) {
                         Button(action: {
                             if !isNavigationMode {
@@ -46,7 +51,7 @@ struct MapView: View {
                         }) {
                             ScooterAnnotationContent(
                                 annotation: annotation,
-                                mapViewModel: mapViewModel
+                                rideViewModel: rideViewModel
                             )
                         }
                         .buttonStyle(.plain)
@@ -54,7 +59,7 @@ struct MapView: View {
                 }
             }
             
-            if let polyline = mapViewModel.routePolyline {
+            if let polyline = rideViewModel.routePolyline {
                 MapPolyline(polyline)
                     .stroke(Color.green, lineWidth: 4)
             }
@@ -64,12 +69,12 @@ struct MapView: View {
             mapViewModel.requestPermission()
         }
         .task {
-            await mapViewModel.getNearByScooters()
+            await rideViewModel.fetchNearByScooters()
         }
     }
 }
 
 //#Preview {
-//    MapView(mapViewModel: MapViewModel())
+//    MapView(mapViewModel: MapViewModel(), rideViewModel: RideNavigationViewModel())
 //}
 

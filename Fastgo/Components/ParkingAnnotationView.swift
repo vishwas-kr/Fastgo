@@ -9,14 +9,14 @@ import SwiftUI
 
 struct ParkingAnnotationView: View {
     let annotation: ParkingAnnotation
-    @ObservedObject var mapViewModel: MapViewModel
+    @ObservedObject var rideViewModel: RideNavigationViewModel
     
     private var isSelectedForNavigation: Bool {
-        mapViewModel.selectedParkingAnnotation?.id == annotation.id
+        rideViewModel.selectedParkingAnnotation?.id == annotation.id
     }
     
     private var showCapsule: Bool {
-        isSelectedForNavigation && mapViewModel.routePolyline != nil && mapViewModel.rideStatus == .inProgress
+        isSelectedForNavigation && rideViewModel.routePolyline != nil && rideViewModel.rideStatus == .inProgress
     }
     
     var body: some View {
@@ -37,8 +37,8 @@ struct ParkingAnnotationView: View {
                     }
             }
             AnnotationInfoCapsule(
-                timeData: mapViewModel.formattedDuration,
-                distanceData: mapViewModel.formattedDistance,
+                timeData: rideViewModel.formattedDuration,
+                distanceData: rideViewModel.formattedDistance,
                 isVisible: showCapsule
             )
             .padding(.top, 6)
@@ -52,10 +52,9 @@ struct ParkingAnnotationView: View {
             annotation: ParkingAnnotation(
                 id: "preview",
                 coordinate: .init(latitude: 0, longitude: 0),
-                name: "Test Parking",
-                spotsAvailable: 5
+                name: "Test Parking"
             ),
-            mapViewModel: MapViewModel()
+            rideViewModel: RideNavigationViewModel()
         )
     }
 }

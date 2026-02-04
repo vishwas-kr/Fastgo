@@ -8,8 +8,8 @@ import Supabase
 import Foundation
 
 
-class ScooterServices {
-    static let shared = ScooterServices()
+class NavigationServices {
+    static let shared = NavigationServices()
     private let client : SupabaseClient
     
     private init() {
@@ -22,5 +22,9 @@ class ScooterServices {
     
     func fetchScooters() async throws -> [ScooterDTO]{
         try await client.from("scooters").select().eq("status", value: "available").execute().value
+    }
+    
+    func fetchParking() async throws -> [Parking]{
+        try await client.from("parking").select().execute().value
     }
 }
