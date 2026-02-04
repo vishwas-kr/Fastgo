@@ -53,11 +53,13 @@ class RideNavigationViewModel : ObservableObject {
         stopTimer()
         remainingSeconds = 600
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            if self.remainingSeconds > 0 {
-                self.remainingSeconds -= 1
-            } else {
-                self.stopTimer()
+            Task { @MainActor in
+                guard let self = self else { return }
+                if self.remainingSeconds > 0 {
+                    self.remainingSeconds -= 1
+                } else {
+                    self.stopTimer()
+                }
             }
         }
     }
