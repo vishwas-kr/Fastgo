@@ -16,10 +16,21 @@ extension Notification.Name {
 @MainActor
 class RideNavigationViewModel : ObservableObject {
     
-    // MARK: - Timer Properties
+    // MARK: - Reservation Timer Properties
     @Published var remainingSeconds: Int = 600
     @Published var timer: Timer?
     @Published var didScanQRSuccessfully: Bool = false
+    
+    // MARK: - Ride Tracking Properties (for InProgress state)
+    @Published var rideElapsedSeconds: Int = 0
+    @Published var rideDistanceTraveled: CLLocationDistance = 0
+    private var rideTimer: Timer?
+    private var rideStartTime: Date?
+    private var lastRideLocation: CLLocation?
+    
+    // MARK: - Completed Ride Data (for fare calculation)
+    var completedRideDurationMinutes: Int = 0
+    var completedRideDistanceKm: Double = 0
     
     // MARK: - Navigation Properties
     @Published var scooterAnnotations: [ScooterAnnotation] = []
@@ -30,6 +41,11 @@ class RideNavigationViewModel : ObservableObject {
     @Published var navigatingToScooter: ScooterAnnotation?
     @Published var selectedParkingAnnotation: ParkingAnnotation?
     @Published var isNavigationMode: Bool = false
+    
+    // MARK: - Real-time Route Update Properties
+    private var lastRouteCalculationLocation: CLLocation?
+    private let routeUpdateDistanceThreshold: CLLocationDistance = 50 // meters
+    private var isRecalculatingRoute: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     private let navigationServices = NavigationServices.shared
@@ -72,6 +88,60 @@ class RideNavigationViewModel : ObservableObject {
     func resetTimer() {
         stopTimer()
         remainingSeconds = 600
+    }
+    
+    // MARK: - Ride Timer Methods (counts UP during InProgress)
+    func startRideTimer(initialLocation: CLLocation?) {
+        stopRideTimer()
+        rideStartTime = Date()
+        rideElapsedSeconds = 0
+        rideDistanceTraveled = 0
+        lastRideLocation = initialLocation
+        
+        rideTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self = self else { return }
+                self.rideElapsedSeconds += 1
+            }
+        }
+    }
+    
+    func stopRideTimer() {
+        rideTimer?.invalidate()
+        rideTimer = nil
+    }
+    
+    func updateRideDistance(newLocation: CLLocation) {
+        guard rideStatus == .inProgress else { return }
+        
+        if let lastLocation = lastRideLocation {
+            let distance = newLocation.distance(from: lastLocation)
+            // Only add distance if movement is reasonable (avoid GPS jitter)
+            if distance >= 5 && distance <= 500 {
+                rideDistanceTraveled += distance
+            }
+        }
+        lastRideLocation = newLocation
+    }
+    
+    // MARK: - Ride Tracking Formatted Properties
+    var formattedRideDuration: String {
+        let minutes = rideElapsedSeconds / 60
+        let seconds = rideElapsedSeconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    var formattedRideDistance: String {
+        let km = rideDistanceTraveled / 1000
+        if km < 1 {
+            return String(format: "%.0f m", rideDistanceTraveled)
+        }
+        return String(format: "%.2f km", km)
+    }
+    
+    var currentScooterBattery: String {
+        guard let scooter = navigatingToScooter?.scooter else { return "--" }
+        return "\(scooter.battery)%"
     }
     
     // MARK: - QR Scan Methods
@@ -129,6 +199,9 @@ class RideNavigationViewModel : ObservableObject {
             return
         }
         
+        // Store the location used for this route calculation
+        lastRouteCalculationLocation = userLocation
+        
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: userLocation.coordinate))
         request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destination))
@@ -140,6 +213,41 @@ class RideNavigationViewModel : ObservableObject {
         } catch {
             print("Error Drawing Polyline: \(error)")
         }
+    }
+    
+    // MARK: - Real-time Route Updates
+    /// Call this method when user location changes to update route if needed
+    func updateRouteIfNeeded(userLocation: CLLocation?) async {
+        guard let userLocation = userLocation else { return }
+        
+        // Only update during active navigation modes
+        guard mapMode == .navigateToScooter || mapMode == .navigateToParking else { return }
+        
+        // Prevent concurrent recalculations
+        guard !isRecalculatingRoute else { return }
+        
+        // Check if we've moved enough to warrant a recalculation
+        if let lastLocation = lastRouteCalculationLocation {
+            let distance = userLocation.distance(from: lastLocation)
+            guard distance >= routeUpdateDistanceThreshold else { return }
+        }
+        
+        isRecalculatingRoute = true
+        defer { isRecalculatingRoute = false }
+        
+        // Determine destination based on current navigation mode
+        let destination: CLLocationCoordinate2D?
+        if mapMode == .navigateToScooter, let scooter = navigatingToScooter {
+            destination = scooter.coordinates
+        } else if mapMode == .navigateToParking, let parking = selectedParkingAnnotation {
+            destination = parking.coordinates
+        } else {
+            destination = nil
+        }
+        
+        guard let dest = destination else { return }
+        
+        await drawRoute(from: userLocation, to: dest)
     }
     
     // MARK: - Navigation Flow
@@ -167,15 +275,23 @@ class RideNavigationViewModel : ObservableObject {
         if newStatus == .inProgress {
             mapMode = .riding
             routePolyline = nil
+            stopTimer() // Stop reservation timer
+            startRideTimer(initialLocation: userLocation)
             Task {
                 await fetchNearByParking(userLocation: userLocation)
             }
         } else if newStatus == .completed {
+            // Store final ride data for fare calculation
+            completedRideDurationMinutes = rideElapsedSeconds / 60
+            completedRideDistanceKm = rideDistanceTraveled / 1000
+            stopRideTimer()
             mapMode = .browse
         }
     }
     
     func resetRideState() {
+        stopTimer()
+        stopRideTimer()
         withAnimation {
             routePolyline = nil
             navigatingToScooter = nil
@@ -184,6 +300,11 @@ class RideNavigationViewModel : ObservableObject {
             isNavigationMode = false
             mapMode = .browse
             rideStatus = .reserved
+            lastRouteCalculationLocation = nil
+            rideElapsedSeconds = 0
+            rideDistanceTraveled = 0
+            lastRideLocation = nil
+            rideStartTime = nil
         }
     }
     
