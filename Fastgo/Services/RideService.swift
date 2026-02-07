@@ -12,11 +12,7 @@ class RideService {
     private let client : SupabaseClient
     
     private init() {
-        self.client = SupabaseClient(
-            supabaseURL: URL(string: APIConstants.project_URL)!,
-            supabaseKey: APIConstants.projectAPI_KEY
-        )
-        print("Supabase RideService initialized ✅")
+        self.client = SupabaseService.shared.client
     }
     
     func fetchRides(userId: String) async throws -> [Ride]{
@@ -25,5 +21,13 @@ class RideService {
     
     func createRide(userId: String, payload: Ride) async throws -> Ride {
         try await client.from("rides").insert(payload).select().single().execute().value
+    }
+    
+    func updateRide(rideId: String, payload: RideUpdatePayload) async throws {
+        try await client.from("rides").update(payload).eq("id", value: rideId).execute()
+    }
+    
+    func updateRidePhoto(rideId: String, payload: RidePhotoUpdatePayload) async throws {
+        try await client.from("rides").update(payload).eq("id", value: rideId).execute()
     }
 }

@@ -13,11 +13,7 @@ class NavigationServices {
     private let client : SupabaseClient
     
     private init() {
-        self.client = SupabaseClient(
-            supabaseURL: URL(string: APIConstants.project_URL)!,
-            supabaseKey: APIConstants.projectAPI_KEY
-        )
-        print("Supabase Scooter Services initialized ✅")
+        self.client = SupabaseService.shared.client
     }
     
     func fetchScooters() async throws -> [ScooterDTO]{
