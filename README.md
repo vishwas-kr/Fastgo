@@ -23,10 +23,10 @@ Based on the Fastgo Scooty design specifications, the app includes:
 | Ride Completion | ✅ | Finish ride flow with instructions |
 | Ride History | ✅ | View past rides and trip details |
 | Promo Codes | ✅ | Apply promotional discounts |
+| Photo Verification | ✅ | Submit a photo of your parked scooter for completing ride |
 
 ### 🚧 Pending Features
 - **Payment Integration** - Coming soon
-- **Photo Verification** - Take photo to verify parking placement
 
 ---
 
@@ -272,6 +272,8 @@ CREATE TABLE rides (
     promo_code TEXT,
     discount_amount DECIMAL(10,2) DEFAULT 0,
 
+    ride_completed_photo_url TEXT NULL;
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 ```
@@ -297,6 +299,9 @@ FOR UPDATE
 USING (
     user_id = auth.uid()
     AND status IN ('reserved', 'in_progress')
+)
+WITH CHECK (
+    user_id = auth.uid()
 );
 ```
 
@@ -395,6 +400,34 @@ USING (
 );
 ```
 ---
+
+ - Create a storage bucket named `completedRides` for profile images
+ - Enable RLS Policy for 'completedRides' bucket
+
+```
+CREATE POLICY "Users can upload their own ride completion photo"
+ON storage.objects
+FOR INSERT
+TO authenticated
+WITH CHECK (
+  bucket_id = 'completedRides'
+  AND auth.uid()::text = split_part(name, '/', 1)
+);
+
+CREATE POLICY "Public read access for completed rides"
+ON storage.objects
+FOR SELECT
+USING (bucket_id = 'completedRides');
+
+CREATE POLICY "Users can update their own ride completion photo"
+ON storage.objects
+FOR UPDATE
+TO authenticated
+USING (
+  bucket_id = 'completedRides'
+  AND auth.uid()::text = split_part(name, '/', 1)
+);
+```
 
 ## 🔄 App Flow
 
