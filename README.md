@@ -557,6 +557,6 @@ USING (
 | <img src="screenshots/UserToScooter.png" width="180"/> | <img src="screenshots/RideReserve.png" width="180"/> | <img src="screenshots/RideInProgress.png" width="180"/> | <img src="screenshots/NearByParking.png" width="180"/> |
 
 
-| Finish Ride |
-|-------|
-| <img src="screenshots/FinishRide.png" width="180"/> |
+| Finish Ride | Camera | Ride Completion Verification |
+|-------|-------|-------|
+| <img src="screenshots/FinishRide.png" width="180"/> | <img src="screenshots/camera.png" width="180"/> | <img src="screenshots/uploadPic.png" width="180"/> |
