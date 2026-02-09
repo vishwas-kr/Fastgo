@@ -549,7 +549,7 @@ USING (
 
 | Settings | Profile | Ride History |   Promo Codes    |
 |-------|------|---------|---------|
-| <img src="screenshots/Settings.png" width="180"/> | <img src="screenshots/Profile.png" width="180"/> | <img src="screenshots/RideHistory.png" width="180"/> | <img src="screenshots/Profile.png" width="180"/> |
+| <img src="screenshots/Settings.png" width="180"/> | <img src="screenshots/Profile.png" width="180"/> | <img src="screenshots/RideHistory.png" width="180"/> | <img src="screenshots/PromoCodes.png" width="180"/> |
 
 
 | Navigate to Scooter | Reserve Scooter | Ride In Progress |   Nearby Parking    |
