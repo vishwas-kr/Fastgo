@@ -15,15 +15,15 @@ struct InProgressRideCard : View {
     var body : some View {
         VStack {
             HStack(spacing: 18) {
-                CapsuleComponent(image: "bolt.circle", title: "90%")
+                CapsuleComponent(image: "bolt.circle", title: rideViewModel.currentScooterBattery)
                 Divider()
                     .background(.white)
                     .frame(height: 10)
-                CapsuleComponent(image: "clock", title: rideViewModel.formattedDuration)
+                CapsuleComponent(image: "clock", title: rideViewModel.formattedRideDuration)
                 Divider()
                     .background(.white)
                     .frame(height: 10)
-                CapsuleComponent(image: "arrow.swap", title: rideViewModel.formattedDistance)
+                CapsuleComponent(image: "arrow.swap", title: rideViewModel.formattedRideDistance)
             }
             .padding(.vertical, 12)
             SldeToAction(color: .green, title: "Swipe to finish ride", completedTitle: "Finishing...") {

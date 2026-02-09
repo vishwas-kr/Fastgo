@@ -47,6 +47,7 @@ struct Ride: Identifiable, Codable {
 
     let promoCode: String?
     let discountAmount: Double?
+    let rideCompletedPhotoUrl: String?
 
     let createdAt: Date
 
@@ -68,6 +69,7 @@ struct Ride: Identifiable, Codable {
         case totalFare = "total_fare"
         case promoCode = "promo_code"
         case discountAmount = "discount_amount"
+        case rideCompletedPhotoUrl = "ride_completed_photo_url"
         case createdAt = "created_at"
     }
 }
@@ -80,4 +82,34 @@ struct RideHistoryItem: Identifiable {
     let durationMinutes: Int?
     let totalFare: Double
     let date: Date
+}
+
+struct RideUpdatePayload: Codable {
+    let status: RideStatus
+    let endLatitude: Double?
+    let endLongitude: Double?
+    let endLocationName: String?
+    let endedAt: Date?
+    let durationMinutes: Int?
+    let distanceKm: Double?
+    let totalFare: Double?
+    
+    enum CodingKeys: String, CodingKey {
+        case status
+        case endLatitude = "end_latitude"
+        case endLongitude = "end_longitude"
+        case endLocationName = "end_location_name"
+        case endedAt = "ended_at"
+        case durationMinutes = "duration_minutes"
+        case distanceKm = "distance_km"
+        case totalFare = "total_fare"
+    }
+}
+
+struct RidePhotoUpdatePayload: Codable {
+    let rideCompletedPhotoUrl: String
+    
+    enum CodingKeys: String, CodingKey {
+        case rideCompletedPhotoUrl = "ride_completed_photo_url"
+    }
 }

@@ -37,8 +37,7 @@ struct FinishRideView: View {
                                 }
                                 
                                 CustomGreenButton(action: {
-                                    rideViewModel.resetRideState()
-                                    router.navigateToHome()
+                                    router.navigate(to: .ridePhoto)
                                 }, title: "Take a photo", imageName: "camera")
                                 .padding(.top, 12)
                             }

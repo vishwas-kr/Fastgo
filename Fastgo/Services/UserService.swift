@@ -13,11 +13,7 @@ class UserService {
     private let client : SupabaseClient
     
     private init() {
-        self.client = SupabaseClient(
-            supabaseURL: URL(string: APIConstants.project_URL)!,
-            supabaseKey: APIConstants.projectAPI_KEY
-        )
-        print("Supabase UserService initialized ✅")
+        self.client = SupabaseService.shared.client
     }
     
     

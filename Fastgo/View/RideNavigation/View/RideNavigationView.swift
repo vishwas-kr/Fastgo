@@ -50,6 +50,17 @@ struct RideNavigationView: View {
                 rideViewModel.resetQRScanStatus()
             }
         }
+        .onReceive(mapViewModel.locationManager.$currentLocation) { newLocation in
+            guard let location = newLocation else { return }
+            
+            // Update route ETA during navigation modes
+            Task {
+                await rideViewModel.updateRouteIfNeeded(userLocation: location)
+            }
+            
+            // Track distance traveled during ride
+            rideViewModel.updateRideDistance(newLocation: location)
+        }
     }
 }
 

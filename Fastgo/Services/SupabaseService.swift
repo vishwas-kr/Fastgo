@@ -10,7 +10,7 @@ import Foundation
 
 struct SupabaseService {
     static let shared = SupabaseService()
-    private let client : SupabaseClient
+    let client : SupabaseClient
     
     private init() {
         self.client = SupabaseClient(
@@ -55,6 +55,14 @@ struct SupabaseService {
         let fullPath = try await client.storage.from("avatars").upload(path, data: imageData, options: FileOptions(contentType: "image/jpeg",upsert: true)).path
         print("Full Path: \(fullPath)")
         let publicURL = "\(APIConstants.project_URL)/storage/v1/object/public/avatars/\(path)"
+        return publicURL
+    }
+    
+    func uploadRideCompletedPhoto(userId: String, rideId: String, imageData: Data) async throws -> String {
+        let path = "\(userId)/\(rideId).png"
+        let fullPath = try await client.storage.from("completedRides").upload(path, data: imageData, options: FileOptions(contentType: "image/png", upsert: true)).path
+        print("Ride Photo Full Path: \(fullPath)")
+        let publicURL = "\(APIConstants.project_URL)/storage/v1/object/public/completedRides/\(path)"
         return publicURL
     }
     
