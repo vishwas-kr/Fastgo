@@ -19,7 +19,6 @@ enum MapMode {
 @MainActor
 class MapViewModel : ObservableObject {
     let locationManager = LocationManager()
-    private let geocoder = CLGeocoder()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Map Display Properties
@@ -28,7 +27,6 @@ class MapViewModel : ObservableObject {
     @Published var selectedAnnotation: ScooterAnnotation?
     
     private var hasCenteredOnce = false
-    private var lastGeocodedLocation: CLLocation?
     
     init() {
         bindLocation()
@@ -111,31 +109,10 @@ class MapViewModel : ObservableObject {
     
     // MARK: - Geocoding
     private func reverseGeocode(_ location: CLLocation) {
-        if let last = lastGeocodedLocation,
-           last.distance(from: location) < 50 {
-            return
-        }
-        
-        lastGeocodedLocation = location
-        geocoder.cancelGeocode()
-        
-        geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
-            if let error = error {
-                print("Geocoding Error: \(error)")
-                return
-            }
-            
-            guard let placemark = placemarks?.first else { return }
-            
-            let street = placemark.thoroughfare ?? ""
-            let number = placemark.subThoroughfare ?? ""
-            let city = placemark.locality ?? ""
-            let state = placemark.administrativeArea ?? ""
-            
-            self?.userLocation = "\(number) \(street), \(city) \(state)"
-                .trimmingCharacters(in: .whitespaces)
-            
-            print("User Address: \(self?.userLocation ?? "No Address")")
+        Task {
+            let address = await GeocodingService.shared.reverseGeocode(location)
+            self.userLocation = address
+            print("User Address: \(address)")
         }
     }
     

@@ -84,7 +84,7 @@ struct QRCodeScanView: View {
         }
         .onChange(of: viewModel.scannedCode) { oldValue, newValue in
             guard newValue != nil else { return }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5)  {
                 switch source {
                 case .home:
                     rideViewModel.updateStatus(to: .inProgress, userLocation: mapViewModel.currentUserLocation)

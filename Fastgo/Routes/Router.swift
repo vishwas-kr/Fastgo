@@ -26,6 +26,7 @@ enum HomeRoutes : Hashable {
     case scanQRCode(QRScanSource)
     case rideNavigation(ScooterAnnotation?)
     case rideCompleted
+    case ridePhoto
 }
 
 final class HomeRouter : ObservableObject {
