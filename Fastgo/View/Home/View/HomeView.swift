@@ -84,8 +84,7 @@ struct HomeView: View {
                     case .promoCode:
                         PromoCodeView()
                     case .inviteFriends:
-                        Text("Invite Friends View")
-                            .navigationTitle("Invite Friends")
+                        EmptyView()
                     }
                 }
                 
