@@ -24,6 +24,7 @@ Based on the Fastgo Scooty design specifications, the app includes:
 | Ride History | ✅ | View past rides and trip details |
 | Promo Codes | ✅ | Apply promotional discounts |
 | Photo Verification | ✅ | Submit a photo of your parked scooter for completing ride |
+| Payment Methods | ✅ | Save your bank or card details |
 
 ### 🚧 Pending Features
 - **Payment Integration** - Coming soon
@@ -370,6 +371,41 @@ on parking
 for select
 using (true);
 ```
+* ##### Run this SQL in the Supabase SQL Editor for creating a table Payments:
+
+```
+create table payment_methods (
+    id TEXT PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) NOT NULL,
+    type TEXT NOT NULL CHECK (type IN ('bank', 'card')),
+    card_number TEXT,
+    card_holder_name TEXT,
+    expiry_date TEXT,
+    cvv TEXT,
+    bank_name TEXT,
+    account_number TEXT,
+    ifsc_code TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+* ##### For Adding RLS Policy
+```
+ALTER TABLE payment_methods ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their payment methods"
+ON payment_methods FOR SELECT
+USING (user_id = auth.uid());
+
+CREATE POLICY "Users can insert payment methods"
+ON payment_methods FOR INSERT
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can delete their payment methods"
+ON payment_methods FOR DELETE
+USING (user_id = auth.uid());
+```
+
+
 * ##### Additional Setup :  
  - Enable Phone Auth in Supabase Authentication settings and selectr **Twilio as SMS provider.** Add your **Twilio Account SID** , **Twilio Auth Token** & **Twilio Message Service SID**. 
  - Create a storage bucket named `avatars` for profile images
@@ -550,6 +586,11 @@ USING (
 | Settings | Profile | Ride History |   Promo Codes    |
 |-------|------|---------|---------|
 | <img src="screenshots/Settings.png" width="180"/> | <img src="screenshots/Profile.png" width="180"/> | <img src="screenshots/RideHistory.png" width="180"/> | <img src="screenshots/PromoCodes.png" width="180"/> |
+
+| Invite/Share | Payment Bank | Payment Cards |
+|-------|------|---------|
+| <img src="screenshots/share.png" width="180"/> | <img src="screenshots/bank.png" width="180"/> | <img src="screenshots/card.png" width="180"/> |
+
 
 
 | Navigate to Scooter | Reserve Scooter | Ride In Progress |   Nearby Parking    |
