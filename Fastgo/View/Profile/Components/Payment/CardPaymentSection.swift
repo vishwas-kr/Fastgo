@@ -40,18 +40,6 @@ struct CardPaymentSection: View {
                 }
             }
             
-            //            MyAccountTextField(title: "Card Number", text: Binding(
-            //                get: { viewModel.formattedCardNumber },
-            //                set: { viewModel.formatCardNumber($0) }
-            //            ))
-            //            .keyboardType(.numberPad)
-            //            .focused($focusedField, equals: .number)
-            //            .onChange(of: viewModel.cardNumber) {
-            //                if viewModel.cardNumber.count == 16 {
-            //                    focusedField = .holder
-            //                }
-            //            }
-            
             FSTextField(text: $viewModel.cardHolderName, placeholder: "Card Holder Name", font: .headline)
             
             
@@ -68,19 +56,6 @@ struct CardPaymentSection: View {
                     }
                 }
                 
-                
-                //                MyAccountTextField(title: "MM/YY", text: Binding(
-                //                    get: { viewModel.expiryDate },
-                //                    set: { viewModel.formatExpiry($0) }
-                //                ))
-                //                .keyboardType(.numberPad)
-                //                .focused($focusedField, equals: .expiry)
-                //                .onChange(of: viewModel.expiryDate) {
-                //                    if viewModel.expiryDate.count == 5 {
-                //                        focusedField = .cvv
-                //                    }
-                //                }
-                
                 FSTextField(text: Binding(
                     get: { viewModel.cvv },
                     set: { viewModel.formatCVV($0) }
@@ -91,19 +66,6 @@ struct CardPaymentSection: View {
                         focusedField = nil
                     }
                 }
-                
-                //                MyAccountTextField(title: "CVV", text: Binding(
-                //                    get: { viewModel.cvv },
-                //                    set: { viewModel.formatCVV($0) }
-                //                ))
-                //                .keyboardType(.numberPad)
-                //                .focused($focusedField, equals: .cvv)
-                //                .onChange(of: viewModel.cvv) {
-                //                    // Dismiss keyboard after 4 digits for CVV
-                //                    if viewModel.cvv.count == 4 {
-                //                        focusedField = nil
-                //                    }
-                //                }
             }
         }
     }

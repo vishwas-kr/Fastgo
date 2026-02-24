@@ -28,8 +28,6 @@ struct BankPaymentSection: View {
                 .padding(.top, 4)
             
             FSTextField(text: $viewModel.bankName, placeholder: "Bank Name", font: .headline)
-            //            MyAccountTextField(title: "Bank Name", text: $viewModel.bankName)
-            //                .focused($focusedField, equals: .name)
             
             FSTextField(text: Binding(
                 get: { viewModel.accountNumber },
@@ -43,19 +41,6 @@ struct BankPaymentSection: View {
                 }
             }
             
-            
-            //            MyAccountTextField(title: "Account Number", text: Binding(
-            //                get: { viewModel.accountNumber },
-            //                set: { viewModel.formatAccountNumber($0) }
-            //            ))
-            //            .keyboardType(.numberPad)
-            //            .focused($focusedField, equals: .account)
-            //            .onChange(of: viewModel.accountNumber) {
-            //                if viewModel.accountNumber.count == 17 {
-            //                    focusedField = .ifsc
-            //                }
-            //            }
-            
             FSTextField(text: Binding(
                 get: { viewModel.ifscCode },
                 set: { viewModel.formatIFSC($0) }
@@ -66,17 +51,6 @@ struct BankPaymentSection: View {
                     focusedField = nil
                 }
             }
-            
-            //            MyAccountTextField(title: "IFSC Code", text: Binding(
-            //                get: { viewModel.ifscCode },
-            //                set: { viewModel.formatIFSC($0) }
-            //            ))
-            //            .focused($focusedField, equals: .ifsc)
-            //            .onChange(of: viewModel.ifscCode) {
-            //                // Dismiss keyboard after 11 chars for IFSC
-            //                if viewModel.ifscCode.count == 11 {
-            //                    focusedField = nil
-            //                }
         }
     }
     

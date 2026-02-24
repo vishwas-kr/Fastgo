@@ -15,14 +15,6 @@ struct PromoCodeView: View {
             HStack{
                 
                 FSTextField(text: $text, placeholder: "Type coupon code", font: .headline, isBorderVisible: true)
-//                TextField("Type coupon code", text: $text)
-//                    .focused($isSelected)
-//                    .font(.headline)
-//                    .fontWeight(.regular)
-//                    .foregroundStyle(text.isEmpty ? .gray : .black)
-//                    .accessibilityHint("Type coupon code", isEnabled: isSelected)
-//                    .padding()
-                    
                 
                 if isSelected && !text.isEmpty {
                     Image(systemName:"xmark.circle.fill")
