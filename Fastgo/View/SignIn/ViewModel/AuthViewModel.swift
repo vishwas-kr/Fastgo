@@ -52,7 +52,7 @@ class AuthViewModel : ObservableObject {
             startResendTimer()
         } catch {
             showErrorMessage("Failed to send OTP. Please try again.")
-            print("Error Sending OTP:",error.localizedDescription)
+            print("Error Sending OTP:",error)
         }
         isLoading = false
     }

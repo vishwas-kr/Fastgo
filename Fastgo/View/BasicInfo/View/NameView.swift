@@ -8,21 +8,9 @@
 import SwiftUI
 
 struct NameView: View {
-    @FocusState var isFocused : Bool
     @Binding var name : String
     var body: some View {
-        TextField("Your name",text:$name)
-            .focused($isFocused)
-            .font(.headline)
-            .fontWeight(.semibold)
-            .padding()
-            .foregroundStyle(Color(.systemGray4))
-            .frame(maxWidth: .infinity,maxHeight: 55)
-            .background(.green.opacity(isFocused ? 0.02 : 0))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isFocused ? Color.green : Color(.systemGray4), lineWidth: 1)
-            )
+        FSTextField(text: $name, placeholder: "Enter your name", font: .headline, fontWeight: .semibold, isBorderVisible: true)
     }
 }
 

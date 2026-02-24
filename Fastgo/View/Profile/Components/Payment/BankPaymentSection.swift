@@ -27,14 +27,15 @@ struct BankPaymentSection: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 4)
             
-            MyAccountTextField(title: "Bank Name", text: $viewModel.bankName)
-                .focused($focusedField, equals: .name)
+            FSTextField(text: $viewModel.bankName, placeholder: "Bank Name", font: .headline)
+            //            MyAccountTextField(title: "Bank Name", text: $viewModel.bankName)
+            //                .focused($focusedField, equals: .name)
             
-            MyAccountTextField(title: "Account Number", text: Binding(
+            FSTextField(text: Binding(
                 get: { viewModel.accountNumber },
                 set: { viewModel.formatAccountNumber($0) }
-            ))
-            .keyboardType(.numberPad)
+            ),
+                        placeholder: "Account Number", font: .headline, keyBoardType: .numberPad)
             .focused($focusedField, equals: .account)
             .onChange(of: viewModel.accountNumber) {
                 if viewModel.accountNumber.count == 17 {
@@ -42,17 +43,40 @@ struct BankPaymentSection: View {
                 }
             }
             
-            MyAccountTextField(title: "IFSC Code", text: Binding(
+            
+            //            MyAccountTextField(title: "Account Number", text: Binding(
+            //                get: { viewModel.accountNumber },
+            //                set: { viewModel.formatAccountNumber($0) }
+            //            ))
+            //            .keyboardType(.numberPad)
+            //            .focused($focusedField, equals: .account)
+            //            .onChange(of: viewModel.accountNumber) {
+            //                if viewModel.accountNumber.count == 17 {
+            //                    focusedField = .ifsc
+            //                }
+            //            }
+            
+            FSTextField(text: Binding(
                 get: { viewModel.ifscCode },
                 set: { viewModel.formatIFSC($0) }
-            ))
+            ), placeholder: "IFSC Code", font: .headline)
             .focused($focusedField, equals: .ifsc)
             .onChange(of: viewModel.ifscCode) {
-                // Dismiss keyboard after 11 chars for IFSC
                 if viewModel.ifscCode.count == 11 {
                     focusedField = nil
                 }
             }
+            
+            //            MyAccountTextField(title: "IFSC Code", text: Binding(
+            //                get: { viewModel.ifscCode },
+            //                set: { viewModel.formatIFSC($0) }
+            //            ))
+            //            .focused($focusedField, equals: .ifsc)
+            //            .onChange(of: viewModel.ifscCode) {
+            //                // Dismiss keyboard after 11 chars for IFSC
+            //                if viewModel.ifscCode.count == 11 {
+            //                    focusedField = nil
+            //                }
         }
     }
     

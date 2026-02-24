@@ -13,13 +13,15 @@ struct PromoCodeView: View {
     var body: some View {
         VStack (alignment: .leading, spacing: 22){
             HStack{
-                TextField("Type coupon code", text: $text)
-                    .focused($isSelected)
-                    .font(.headline)
-                    .fontWeight(.regular)
-                    .foregroundStyle(text.isEmpty ? .gray : .black)
-                    .accessibilityHint("Type coupon code", isEnabled: isSelected)
-                    .padding()
+                
+                FSTextField(text: $text, placeholder: "Type coupon code", font: .headline, isBorderVisible: true)
+//                TextField("Type coupon code", text: $text)
+//                    .focused($isSelected)
+//                    .font(.headline)
+//                    .fontWeight(.regular)
+//                    .foregroundStyle(text.isEmpty ? .gray : .black)
+//                    .accessibilityHint("Type coupon code", isEnabled: isSelected)
+//                    .padding()
                     
                 
                 if isSelected && !text.isEmpty {

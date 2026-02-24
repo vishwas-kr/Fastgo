@@ -31,7 +31,7 @@ struct PhoneNumberView : View {
                     .focused($isFocused)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(.primary)
                     .keyboardType(.numberPad)
             }
             .background(.green.opacity(isFocused ? 0.02 :0))

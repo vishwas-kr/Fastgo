@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct MyAccountView: View {
-    @FocusState var isFocused : Bool
+  //  @FocusState var isFocused : Bool
     @StateObject private var viewModel = MyAccountViewModel()
     @State private var isShowingPhotoPicker = false
     var body: some View {
@@ -17,10 +17,13 @@ struct MyAccountView: View {
             VStack(alignment: .leading){
                 MyAccountHeader(viewModel: viewModel,isShowingPhotoPicker: $isShowingPhotoPicker)
                 VStack(spacing: 12) {
-                    MyAccountTextField(title: "Name", text: $viewModel.draft.name)
-                    MyAccountTextField(title: "Date of birth", text: $viewModel.draft.dateOfBirth)
-                        .disabled(true)
-                    MyAccountTextField(title: "About yourself", text: $viewModel.draft.aboutMe)
+                    FSTextField(text: $viewModel.draft.name, placeholder: "Name", font: .headline)
+                    FSTextField(text: $viewModel.draft.dateOfBirth, placeholder: "Date of birth", font: .headline).disabled(true)
+                    FSTextField(text: $viewModel.draft.aboutMe, placeholder: "About yourself", font: .headline)
+//                    MyAccountTextField(title: "Name", text: $viewModel.draft.name)
+//                    MyAccountTextField(title: "Date of birth", text: $viewModel.draft.dateOfBirth)
+//                        .disabled(true)
+//                    MyAccountTextField(title: "About yourself", text: $viewModel.draft.aboutMe)
                 }
                 Text("Gender")
                     .font(.subheadline)
